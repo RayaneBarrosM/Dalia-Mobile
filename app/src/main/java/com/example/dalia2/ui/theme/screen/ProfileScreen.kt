@@ -268,6 +268,13 @@ fun ProfileScreen(
                         backgroundColor = LightPink
                     )
 
+                    SettingsButton(
+                        text = "Mudar para modo gravidez",
+                        icon = R.drawable.search_icon,
+                        onClick = { onChangeModeClick() },
+                        backgroundColor = LightPink
+                    )
+
                     Button(
                         onClick = { },
                         modifier = Modifier

@@ -123,47 +123,13 @@ fun AppNavigation() {
             )
         }
 
-        composable("quizPregnant-1") {
-            QuizPregnant1Screen(
-                onNextClick = {
-                    navController.navigate("quizPregnant-2")
-                },
-                onSkipNext = {
-                    navController.navigate("quizPregnant-3")
-                }
-            )
-        }
 
-        composable("quizPregnant-2") {
-            QuizPregnant2Screen(
-                onNextClick = {
-                    navController.navigate("quizPregnant-3")
-                }
-            )
-        }
-
-        composable("quizPregnant-3") {
-            QuizPregnant3Screen(
-                onNextClick = { months, weeks ->
-                    saveData(months, weeks)
-                    navController.navigate("quizPregnant-4")
-                }
-            )
-        }
-
-        composable("quizPregnant-4") {
-            QuizPregnant4Screen(
-                onNextClick = { months, weeks ->
-                    saveData(months, weeks)
-                    navController.navigate("quizPregnant-5")
-                }
-            )
-        }
-
-        composable("quizPregnant-5") {
-            QuizPregnant5Screen(
-                onNextClick = {
-                    navController.navigate("home")
+        composable("quizPregnant") {
+            QuizPregnantScreen(viewModel = viewmodelQuiz,
+                onQuizComplete = {
+                    navController.navigate("homePregnant") {
+                        popUpTo("quizPregnant"){inclusive = true}
+                    }
                 }
             )
         }
@@ -179,6 +145,11 @@ fun AppNavigation() {
                 }
             )
         }
+
+        composable("homePregnant") {
+            HomePregnantScreen()
+        }
+
 
         composable("register") {
             RegisterScreen()
@@ -265,7 +236,7 @@ fun AppNavigation() {
                     navController.navigate("helpScreen")
                 },
                 onChangeModeClick ={
-                    navController.navigate("Screen") //Vai ter que criar um view model para saber em qual modo está
+                    navController.navigate("quizPregnant") //Vai ter que criar um view model para saber em qual modo está
                 }
             )
         }

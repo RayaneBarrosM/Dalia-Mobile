@@ -38,31 +38,26 @@ import com.example.dalia2.ui.theme.PinkButton
 import com.example.dalia2.ui.theme.viewmodel.QuizViewModel
 
 @Composable
-fun QuizPeriodScreen(
+fun QuizPregnantScreen (
+
     viewModel: QuizViewModel,
     onQuizComplete: () -> Unit
 ) {
     // Lista das perguntas na ordem correta
     val perguntas = listOf(
         Pergunta(
-            titulo = "Qual a sua faixa etária?",
-            tipo = TipoPergunta.BOTAO,
-            campo = "idade",
-            opcoes = listOf(
-                "Menor de 18" to 17,
-                "18 a 30" to 25,
-                "31 a 45 anos" to 35,
-                "Mais de 45 anos" to 45
-            )
+            titulo = "Confirme sua ultima menstruação", tipo = TipoPergunta.DATA, campo = "ultimaMenstruacao"
         ),
-        Pergunta(titulo ="Seu ciclo é regular?", tipo = TipoPergunta.BOTAO, campo = "cicloRegular",
-        opcoes =listOf("Sim" to true, "Não" to false, "Não sei" to false)),
-        Pergunta(titulo ="Você usa métodos contraceptivos?", tipo = TipoPergunta.BOTAO, campo = "contraceptivo",
-        opcoes =listOf("Sim" to true, "Não" to false)),
-        Pergunta(titulo ="Qual destes?", tipo = TipoPergunta.BOTAO, campo = "tipoContraceptivo",
-        opcoes =listOf("Pilulas" to "Pilulas", "DIU" to "DIU", "Injeção" to "Injeção", "Implanou" to "Implanou", "Apenas preservativos" to "Apenas preservativos")),
-        Pergunta(titulo ="Marque o dia da sua ultima menstruação", tipo = TipoPergunta.DATA, campo = "ultimaMenstruacao"),
-        Pergunta(titulo ="Qual a duração média do seu ciclo?", tipo = TipoPergunta.NUMERO, campo = "duracaoCiclo")
+        Pergunta(titulo ="Quantas semenas de gestação você tem?", tipo = TipoPergunta.NUMERO, campo = "qtdSemanas"),
+        Pergunta(titulo ="Qual a previsão de nascimento?", tipo = TipoPergunta.DATA, campo = "previsaoNascimento"),
+        Pergunta(titulo ="Foi Planejada?", tipo = TipoPergunta.BOTAO, campo = "planejado",
+            opcoes =listOf("Sim" to true, "Não" to false)),
+        Pergunta(titulo ="Toma remedio controlado?", tipo = TipoPergunta.BOTAO, campo = "remedios",
+            opcoes =listOf("Sim" to true, "Não" to false)),
+        Pergunta(titulo ="Tem Algum desses habitos?", tipo = TipoPergunta.MULTIPLAESCOLHA, campo = "habitos",
+            opcoes = listOf("Fumar" to "fumar", "Beber" to "beber", "Usar drogas ilicitas" to "drogas", "Nenhum" to false)),
+        Pergunta(titulo ="Quais sintomas você tem?", tipo = TipoPergunta.MULTIPLAESCOLHA, campo = "sintomas",
+            opcoes = listOf("Enjoos" to "enjoos", "Dor no seio" to "dorSeio", "Colicas leves" to "colicas", "Sangramento" to "sangramento", "Nenhum" to false))
     )
 
     var indiceAtual by remember { mutableIntStateOf(0) }
@@ -105,7 +100,7 @@ fun QuizPeriodScreen(
 
         when (perguntaAtual.tipo) {
             TipoPergunta.NUMERO -> {
-                CampoNumero(dicaText = "Coloque um numero entre 21 a 35, se não souber coloque 28", label = "Duração", sufixo = "dias", intervalo = 21..35 , onValorConfirmado = { valor ->
+                CampoNumero(dicaText = "Deve ser de 1 a 40", label = "Semanas", sufixo = "semanas", intervalo = 1..42, onValorConfirmado = { valor ->
                     viewModel.atualizarDadosQuiz(perguntaAtual.campo, valor)
                     proximaPergunta(
                         lista = perguntas,
@@ -113,9 +108,9 @@ fun QuizPeriodScreen(
                         valorSelecionado = valor,
                         atualizarIndice = { indiceAtual = it },
                         finalizou = {
-                        viewModel.onQuizFinish() // Chama o salvamento
-                        onQuizComplete()         // Chama a navegação (agora sem erro!)
-                    })
+                            viewModel.onQuizFinish() // Chama o salvamento
+                            onQuizComplete()         // Chama a navegação (agora sem erro!)
+                        })
                 })
             }
             TipoPergunta.DATA -> {
@@ -134,7 +129,7 @@ fun QuizPeriodScreen(
             TipoPergunta.BOTAO -> {
                 BotoesOpcao(opcoes = perguntaAtual.opcoes, onSelecionado = { valor ->
                     viewModel.atualizarDadosQuiz(perguntaAtual.campo, valor)
-                    proximaPergunta(lista = perguntas,
+                    proximaPergunta2(lista = perguntas,
                         atual = indiceAtual,
                         valorSelecionado = valor,
                         atualizarIndice = { indiceAtual = it },
@@ -147,7 +142,7 @@ fun QuizPeriodScreen(
             TipoPergunta.MULTIPLAESCOLHA -> {
                 BotoesMultiplaEscolha(opcoes = perguntaAtual.opcoes, onConfirmado = { listaValores ->
                     viewModel.atualizarDadosQuiz(perguntaAtual.campo, listaValores)
-                    proximaPergunta(lista = perguntas,
+                    proximaPergunta2(lista = perguntas,
                         atual = indiceAtual,
                         valorSelecionado = listaValores,
                         atualizarIndice = { indiceAtual = it },
@@ -165,7 +160,7 @@ fun QuizPeriodScreen(
 }
 
 
-fun proximaPergunta(lista: List<Pergunta>, atual: Int, valorSelecionado: Any, atualizarIndice: (Int) -> Unit, finalizou: () -> Unit) {
+fun proximaPergunta2(lista: List<Pergunta>, atual: Int, valorSelecionado: Any, atualizarIndice: (Int) -> Unit, finalizou: () -> Unit) {
 
     val perguntaAtual = lista[atual]
     if(perguntaAtual.campo == "contraceptivo" && valorSelecionado == false){
@@ -184,10 +179,11 @@ fun proximaPergunta(lista: List<Pergunta>, atual: Int, valorSelecionado: Any, at
 
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+
+@Preview(showBackground = true)
 @Composable
-fun QuizAScreenPreview() {
+fun QuizPregnant1ScreenPreview() {
     Dalia2Theme {
-        //QuizPeriodScreen{}
+
     }
 }

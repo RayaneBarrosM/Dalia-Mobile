@@ -1,14 +1,14 @@
 package com.example.dalia2.data.model
 
 import com.google.gson.annotations.SerializedName
-import java.time.Instant
 
 data class Posts(
     @SerializedName("id")
-    val idPost:String,
+    val idPost: String,
     val idUser: String,
-    val title:String,
-    val content:String,
+    val title: String,
+    val category: String,
+    val content: String,
     @SerializedName("likes")
     val likesValue: Int,
     val createdAt: String,

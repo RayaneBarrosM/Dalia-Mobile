@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.Instant
-import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -44,7 +43,7 @@ class ForumViewModel  @Inject constructor(
         isLoading = false
     }}
 
-    fun criarNovoPost(titulo: String, conteudo: String, onSucess: () -> Unit) {
+    fun criarNovoPost(titulo: String, categoria: String, conteudo: String, onSucess: () -> Unit) {
         viewModelScope.launch {
             isLoading = true
 
@@ -54,6 +53,7 @@ class ForumViewModel  @Inject constructor(
                 idPost = "", // API gera
                 idUser = "id_USER",
                 title = titulo,
+                category = categoria,
                 content = conteudo,
                 likesValue = 0,
                 createdAt = timestamp,

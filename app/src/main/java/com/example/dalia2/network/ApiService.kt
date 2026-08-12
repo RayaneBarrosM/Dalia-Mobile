@@ -83,7 +83,7 @@ interface ApiService {
         @Path("idPost") idPost: String
     ): Response<Unit>
 
-    @POST("/api/posts/{postId}/addComment")
+    @POST("/api/comments/{postId}/addComment")
     suspend fun createComment (
         @Path ("postId") idPost: String,
         @Body request: Comments

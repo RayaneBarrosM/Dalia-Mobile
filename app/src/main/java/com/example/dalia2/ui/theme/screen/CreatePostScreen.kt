@@ -1,5 +1,7 @@
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +13,10 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -30,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dalia2.ui.theme.BlueButton
 import com.example.dalia2.ui.theme.Dalia2Theme
 import com.example.dalia2.ui.theme.PinkButton
@@ -43,6 +49,10 @@ fun CreatePostScreen(
 ) {
     var titulo by remember { mutableStateOf("") }
     var conteudo by remember { mutableStateOf("") }
+    var categoria by remember { mutableStateOf("")}
+
+    val opcoesCategoria = listOf("Beleza e cuidados", "Moda e estilo", "Gestação", "Ciclo Menstrual", "Saude e bem-estar")
+    var expanded by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -55,12 +65,46 @@ fun CreatePostScreen(
         }
     ) { padding ->
         Column(modifier = Modifier.padding(padding).padding(16.dp)) {
-            OutlinedTextField(
-                value = titulo,
-                onValueChange = { titulo = it },
-                label = { Text("Título do post") },
-                modifier = Modifier.fillMaxWidth()
-            )
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(
+                    value = titulo,
+                    onValueChange = { titulo = it },
+                    label = { Text("Título do post") },
+                    modifier = Modifier.weight(3f)
+                )
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded }
+                ) {
+                    OutlinedTextField(
+                        value = categoria,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Categoria") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        modifier = Modifier.weight(4f).menuAnchor(),
+                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = PinkButton,
+                            focusedLabelColor = PinkButton
+                        )
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        opcoesCategoria.forEach { opcao ->
+                            DropdownMenuItem(
+                                text = { Text(opcao) },
+                                onClick = {
+                                    categoria = opcao
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 value = conteudo,
@@ -72,7 +116,7 @@ fun CreatePostScreen(
             Button(
                 onClick = {
                     if(titulo.isNotBlank() && conteudo.isNotBlank()) {
-                        viewModel.criarNovoPost(titulo, conteudo) {
+                        viewModel.criarNovoPost(titulo, categoria,conteudo) {
                             onBack()
                         }
                     }

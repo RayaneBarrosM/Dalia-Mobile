@@ -49,14 +49,13 @@ class QuizViewModel @Inject constructor(
         _uiState.update { it.copy(cycleDuration = cicleDuration) }
     }
 
-    // No seu SearchViewModel.kt
     fun atualizarDadosQuiz(campo: String, valor: Any) {
         when (campo) {
             "idade" -> updateAge(valor as Int)
             "cicloRegular" -> updateCicloRegular(valor as Boolean)
             "contraceptivo" -> updateContraceptivo(valor as Boolean)
             "tipoContraceptivo" -> updateTypeContraceptive(valor as String)
-            "ultimaMenstrucao" -> updateMenstruacaoDia(valor as String)
+            "ultimaMenstruacao" -> updateMenstruacaoDia(valor as String)
             "duracaoCiclo" -> updateCicleDuration(valor as Int)
         }
     }

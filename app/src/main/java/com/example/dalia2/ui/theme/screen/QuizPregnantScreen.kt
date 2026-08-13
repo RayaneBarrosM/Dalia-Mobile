@@ -35,12 +35,12 @@ import com.example.dalia2.ui.components.Pergunta
 import com.example.dalia2.ui.components.TipoPergunta
 import com.example.dalia2.ui.theme.Dalia2Theme
 import com.example.dalia2.ui.theme.PinkButton
-import com.example.dalia2.ui.theme.viewmodel.QuizViewModel
+import com.example.dalia2.ui.theme.viewmodel.PregnancyQuizViewModel
 
 @Composable
 fun QuizPregnantScreen (
 
-    viewModel: QuizViewModel,
+    viewModel: PregnancyQuizViewModel,
     onQuizComplete: () -> Unit
 ) {
     // Lista das perguntas na ordem correta

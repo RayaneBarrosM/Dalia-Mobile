@@ -17,6 +17,7 @@ import com.example.dalia2.ui.components.BottomNavigationBar
 import com.example.dalia2.ui.theme.screen.*
 import com.example.dalia2.ui.theme.viewmodel.CalendarViewModel
 import com.example.dalia2.ui.theme.viewmodel.ForumViewModel
+import com.example.dalia2.ui.theme.viewmodel.PregnancyQuizViewModel
 import com.example.dalia2.ui.theme.viewmodel.ProfileViewModel
 import com.example.dalia2.ui.theme.viewmodel.QuizViewModel
 
@@ -39,7 +40,7 @@ fun AppNavigation() {
     val viewmodelQuiz: QuizViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
     val viewmodelCalendar: CalendarViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
     val viewModelForum: ForumViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
-
+    val viewModelPregnancyQuiz: PregnancyQuizViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
 
 
     // Lista de rotas onde a barra deve aparecer
@@ -125,7 +126,7 @@ fun AppNavigation() {
 
 
         composable("quizPregnant") {
-            QuizPregnantScreen(viewModel = viewmodelQuiz,
+            QuizPregnantScreen(viewModel = viewModelPregnancyQuiz,
                 onQuizComplete = {
                     navController.navigate("homePregnant") {
                         popUpTo("quizPregnant"){inclusive = true}

@@ -75,3 +75,13 @@ data class CycleData(
     val fimPeriodoFertil: LocalDate,
     val diaOvulacao: LocalDate
 )
+
+data class PregnancyRequest(
+    val isPregnant: Boolean,
+    val gestationWeeks: Int,
+    val expectedBirthDate: String,
+    val plannedPregnancy: Boolean,
+    val takeMedicine: Boolean,
+    val habits: List<String>,
+    val symptoms: List<String>
+)

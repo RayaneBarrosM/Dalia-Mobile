@@ -9,6 +9,7 @@ import com.example.dalia2.data.model.CycleData
 import com.example.dalia2.data.model.DenunciaResponse
 import com.example.dalia2.data.model.LoginRequest
 import com.example.dalia2.data.model.Posts
+import com.example.dalia2.data.model.PregnancyRequest
 import com.example.dalia2.data.model.ProfileRequest
 import com.example.dalia2.data.model.ProfileResponse
 import com.example.dalia2.data.model.SearchRequest
@@ -190,10 +191,32 @@ class DaliaRepository @Inject constructor(
             Log.e("REPO_EXCEPTION", "Falha catastrófica", e)
             Result.failure(e)
         }
-
-
-
     }
+    suspend fun pregnancyQuiz(PregnancyRequest: PregnancyRequest): Result<PregnancyRequest> {
+        return try {
+            val response = api.pregnancyQuiz(PregnancyRequest)
+            if (response.isSuccessful) {
+                val pregnancyResponse = response.body()
+
+                if (pregnancyResponse != null) {
+                    Result.success(pregnancyResponse)
+                } else {
+                    Result.failure(Exception("Corpo da resposta vazio"))
+                }
+            } else {
+                val errorCode = response.code()
+                val errorBody = response.errorBody()?.string() ?: "Erro desconhecido"
+                val cleanMessage = errorBody.replace(Regex("""\d{3}:\s*"""), "").replace("}", "")
+
+                Log.e("REPO_ERROR", "Código: $errorCode | Mensagem: $errorBody")
+                Result.failure(Exception(cleanMessage))
+            }
+        } catch (e: Exception) {
+            Log.e("REPO_EXCEPTION", "Falha catastrófica", e)
+            Result.failure(e)
+        }
+    }
+
 
     suspend fun getPosts(): Result<List<Posts>> {
         return try {

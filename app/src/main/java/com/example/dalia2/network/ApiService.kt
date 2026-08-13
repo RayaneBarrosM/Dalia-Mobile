@@ -62,6 +62,14 @@ interface ApiService {
     suspend fun getCycle(
     ): Response<CycleData>
 
+    //GRAVIDEZ
+    @Headers("Content-Type: application/json",
+        "Accept: */*",
+        "User-Agent: PostmanRuntime/7.41.1")
+    @POST("/api/pregnancy/quiz")
+    suspend fun pregnancyQuiz(
+        @Body request: PregnancyRequest
+    ): Response<PregnancyRequest>
 
     //FORUM
     @GET("/api/posts/getTodos")

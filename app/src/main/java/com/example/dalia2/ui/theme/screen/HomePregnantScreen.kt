@@ -42,7 +42,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.ColorFilter
 import com.example.dalia2.R
 import com.example.dalia2.ui.theme.Black
 import com.example.dalia2.ui.theme.BlueButton
@@ -106,8 +107,12 @@ fun HomePregnantScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
-                .background(Color(0xFFFF8A8A))
-                .padding(vertical = 24.dp, horizontal = 16.dp)
+                .background(brush = Brush.radialGradient(
+                    colors = listOf(
+                        Color(0xFFFA7E8F), // Cor do Centro
+                        Color(0xFFFF8E8E)  // Cor das Bordas
+                    )))
+                .padding(vertical = 30.dp, horizontal = 16.dp)
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -178,7 +183,7 @@ fun HomePregnantScreen(
             )
 
             Spacer(modifier = Modifier.height(8.dp))
-
+            //Cards Fixos
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -189,7 +194,7 @@ fun HomePregnantScreen(
                         .height(160.dp)
                         .clickable { /* Ação */ },
                     shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = Purple)
+                    colors = CardDefaults.cardColors(containerColor = BlueButton)
                 ) {
                     Column(
                         modifier = Modifier
@@ -198,6 +203,10 @@ fun HomePregnantScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.hugheart),
+                            contentDescription = null
+                        )
                         Text(
                             text = "Como você está se sentindo?",
                             textAlign = TextAlign.Center,
@@ -222,6 +231,12 @@ fun HomePregnantScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.pop_heartcalendar),
+                            contentDescription = null,
+                            modifier = Modifier.size(50.dp),
+                            colorFilter = ColorFilter.tint(Color(0xFFF5E6))
+                        )
                         Text(
                             text = "Carteira de vacinação e consultas",
                             textAlign = TextAlign.Center,
@@ -242,6 +257,8 @@ fun HomePregnantScreen(
                 modifier = Modifier.align(Alignment.Start)
             )
 
+            Spacer(modifier = Modifier.height(24.dp))
+
             NewsCarouselPregnant(
                 cardColor = Purple,
                 newsItems = noticiasDiarias,
@@ -252,15 +269,48 @@ fun HomePregnantScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Text(
-                text = "Você sabe sobre as leis?",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Black,
-                modifier = Modifier.align(Alignment.Start)
-            )
-
             Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom // Alinha o "Saiba mais" com a base do subtítulo
+            ) {
+                // Título e Subtítulo
+                Column {
+                    Text(
+                        text = "Você sabe sobre as leis?",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Black
+                    )
+                    Text(
+                        text = "Saiba como se defender",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Black.copy(alpha = 0.7f)
+                    )
+                }
+
+                // Botão: "Saiba mais"
+                Row(
+                    modifier = Modifier.clickable {
+                        /* Ação ao clicar em Saiba Mais */
+                    },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = "Saiba mais",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF3B82F6) // Azul do botão
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(15.dp))
 
             NewsCarouselPregnant(
                 cardColor = Red,
@@ -283,7 +333,7 @@ fun NewsCardPregnant(
 ) {
     Card(
         modifier = Modifier
-            .width(280.dp)
+            .width(240.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
@@ -302,7 +352,7 @@ fun NewsCardPregnant(
                     .background(Color.White),
                 contentAlignment = Alignment.Center
             ) {
-                //Pega a Imagem pela URL
+                /*Pega a Imagem pela URL
                 if (!newsItem.imageUrl.isNullOrEmpty()) {
                     AsyncImage(
                         model = newsItem.imageUrl,
@@ -313,6 +363,25 @@ fun NewsCardPregnant(
                 } else if (newsItem.imageResId != null) {
                     Image(
                         painter = painterResource(id = newsItem.imageResId),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }*/
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(160.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // Solução temporária: usa imagem local enquanto a URL/Coil não carrega
+                    val imageRes = newsItem.imageResId ?: R.drawable.lotus // Ajuste para uma imagem do seu drawable
+
+                    Image(
+                        painter = painterResource(id = imageRes),
                         contentDescription = null,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop

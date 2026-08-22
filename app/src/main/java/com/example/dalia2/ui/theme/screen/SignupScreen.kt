@@ -236,15 +236,27 @@ fun SignupScreen(
             }
 
             Spacer(modifier = Modifier.height(40.dp))
-        }
 
-        //Imagem de carregamento
-        if(viewModel.isLoading){
-            Surface(
-                modifier = Modifier.fillMaxSize()
+            TextButton(
+                onClick = onLoginClick,
+                modifier = Modifier.padding(bottom = 20.dp)
             ) {
-                Box(contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = PinkButton)
+                Text(
+                    text = "Ao se cadastrar no Dália você estará aceitando nossos Termos & Condições",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            //Imagem de carregamento
+            if (viewModel.isLoading) {
+                Surface(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = PinkButton)
+                    }
                 }
             }
         }

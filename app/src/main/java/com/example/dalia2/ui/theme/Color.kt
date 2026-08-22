@@ -6,6 +6,7 @@ val PinkButton = Color(0xFFF6ADD5)
 val GrayButton = Color(0xFFA7A2A3)
 val BlueButton = Color(0xFFC1D5F6)
 val Purple = Color(0xFFD6BFF3)
+val Red = Color(0xFFFFAFAD)
 
 val green = Color(0xFFB5DBD3)
 val Black = Color(0xFF000000)

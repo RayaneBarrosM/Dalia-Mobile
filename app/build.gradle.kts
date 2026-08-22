@@ -87,4 +87,5 @@ dependencies {
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     implementation("com.google.android.gms:play-services-location:21.2.0")
+    implementation("io.coil-kt:coil-compose:2.7.0") //Para pegar as imagens por URL
 }

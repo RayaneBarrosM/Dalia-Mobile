@@ -164,6 +164,12 @@ fun AppNavigation() {
                 },
                 onNavigateToCalendar = {
                     navController.navigate("calendarPregnant")
+                },
+                onNavigateToArticle = {
+                    navController.navigate("articleScreen")
+                },
+                onNavigateToGeneralNews = {
+                    navController.navigate("generalNews")
                 }
             )
         }
@@ -261,6 +267,15 @@ fun AppNavigation() {
                     navController.navigate("quizPregnant") //Vai ter que criar um view model para saber em qual modo está
                 }
             )
+        }
+
+        composable("articleScreen/{articleId}") { backStackEntry ->
+            val articleId = backStackEntry.arguments?.getString("articleId") ?: ""
+            ArticleScreen(articleId = articleId)
+        } //Muda a tela pela id do card
+
+        composable("generalNews") {
+            GeneralNewsScreen()
         }
 
     }}

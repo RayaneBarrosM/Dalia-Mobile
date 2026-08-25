@@ -112,4 +112,9 @@ interface ApiService {
     suspend fun needHelp(
         @Body message: RequestBody
     ): Response<DenunciaResponse>
+
+    //ARTIGOS
+    @GET("/api/articles/getTodos")
+    suspend fun getArticles(
+    ): List<Articles>
 }

@@ -46,7 +46,7 @@ import com.example.dalia2.ui.theme.Dalia2Theme
 
 @Composable
 fun GeneralNewsScreen(
-    newsList: List<NewsItem> = emptyList(),
+    newsList: List<ArticleItem> = emptyList(),
     onNewsClick: (String) -> Unit = {}
 ) {
     var selectedCategory by remember { mutableStateOf("For You") }
@@ -98,18 +98,6 @@ fun GeneralNewsScreen(
     }
 }
 
-data class NewsItem(
-    val id: String,
-    val title: String,
-    val description: String = "",
-    val categoryTag: String,
-    val imageUrl: String? = null,
-    val imageResId: Int? = null,
-    val authorName: String = "",
-    val authorImageUrl: String? = null,
-    val authorImageResId: Int? = null,
-    val publishedTimeAgo: String = ""
-)
 @Composable
 fun CategoryChip(
     categoryName: String,
@@ -138,7 +126,7 @@ fun CategoryChip(
 
 @Composable
 fun NewsRowItem(
-    newsItem: NewsItem,
+    newsItem: ArticleItem,
     onClick: () -> Unit
 ) {
     Row(
@@ -222,7 +210,7 @@ fun NewsRowItem(
 fun GeneralNewsScreenPreview() {
     Dalia2Theme {
         val mockNewsList = listOf(
-            NewsItem(
+            ArticleItem(
                 id = "1",
                 title = "Monarch population soars 4,900 percent since last year in thrilling 2021 western migration",
                 categoryTag = "World",
@@ -230,7 +218,7 @@ fun GeneralNewsScreenPreview() {
                 publishedTimeAgo = "1m ago",
                 imageResId = R.drawable.lotus
             ),
-            NewsItem(
+            ArticleItem(
                 id = "2",
                 title = "The Horrifying Star Wars Holidays Special Has Been Given An Unofficial 4K Upgrade",
                 categoryTag = "Entertainment",
@@ -238,7 +226,7 @@ fun GeneralNewsScreenPreview() {
                 publishedTimeAgo = "5m ago",
                 imageResId = R.drawable.lotus
             ),
-            NewsItem(
+            ArticleItem(
                 id = "3",
                 title = "NASA's $10 billion James Webb Space Telescope Launches An Epic Mission To Study Early Universe",
                 categoryTag = "Science",

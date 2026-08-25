@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.dalia2.data.SessionManager
 import com.example.dalia2.data.local.CicloDao
 import com.example.dalia2.data.local.CicloEntity
+import com.example.dalia2.data.model.Articles
 import com.example.dalia2.data.model.Comments
 import com.example.dalia2.data.model.CycleData
 import com.example.dalia2.data.model.DenunciaResponse
@@ -213,6 +214,16 @@ class DaliaRepository @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e("REPO_EXCEPTION", "Falha catastrófica", e)
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getArticles(): Result<List<Articles>> {
+        return try {
+            val response = api.getArticles()
+            Result.success(response)
+        } catch (e: Exception) {
+            Log.e("REPO_EXCEPTION", "Falha ao tentar resgatar articles", e)
             Result.failure(e)
         }
     }

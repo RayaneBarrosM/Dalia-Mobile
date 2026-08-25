@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dalia2.data.model.Articles
 import com.example.dalia2.data.model.Comments
 import com.example.dalia2.data.model.Posts
 import com.example.dalia2.data.repository.DaliaRepository
@@ -26,9 +27,12 @@ class ForumViewModel  @Inject constructor(
     var errorMessage by mutableStateOf<String?>(null)
         private set
 
-
     private val _posts = MutableStateFlow<List<Posts>>(emptyList())
     val posts = _posts.asStateFlow()
+
+    //ARTIGOS
+    private val _articles = MutableStateFlow<List<Articles>>(emptyList())
+    val articles = _articles.asStateFlow()
 
     fun carregarPosts() {
         viewModelScope.launch {
@@ -41,7 +45,8 @@ class ForumViewModel  @Inject constructor(
                 errorMessage = it.message
             }
         isLoading = false
-    }}
+        }
+    }
 
     fun criarNovoPost(titulo: String, categoria: String, conteudo: String, onSucess: () -> Unit) {
         viewModelScope.launch {
@@ -102,4 +107,20 @@ class ForumViewModel  @Inject constructor(
             carregarPosts()
         }
     }
+
+    //ARTIGOS
+    fun carregarArticles() {
+        viewModelScope.launch {
+            isLoading = true
+            repository.getArticles()
+                .onSuccess { lista ->
+                    _articles.value = lista.sortedByDescending { it.idArticle }
+                }
+                .onFailure {
+                    errorMessage = it.message
+                }
+            isLoading = false
+        }
+    }
+
 }

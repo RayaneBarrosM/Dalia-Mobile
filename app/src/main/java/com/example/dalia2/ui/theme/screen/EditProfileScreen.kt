@@ -357,7 +357,8 @@ fun EditProfileScreen(
                                 surname = state?.user?.surname ?: "",
                                 email = email?:"",
                                 password = if (senha.isBlank()) null else senha,
-                                search = search
+                                search = search,
+                                pregnancy = null
                             )
 
                             // Agora passamos o objeto e a função de sucesso

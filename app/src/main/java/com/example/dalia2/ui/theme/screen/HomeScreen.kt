@@ -1,5 +1,6 @@
 package com.example.dalia2.ui.theme.screen
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.background
@@ -13,7 +14,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -45,9 +47,11 @@ import com.example.dalia2.ui.theme.Black
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.util.lerp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.dalia2.data.model.Articles
 import com.example.dalia2.ui.theme.BlueButton
 import com.example.dalia2.ui.theme.White
 import com.example.dalia2.ui.theme.viewmodel.CalendarViewModel
@@ -84,6 +88,7 @@ val medicosDisponiveis = remember {
 @Composable
 fun HomeScreen(
     viewModel: CalendarViewModel,
+    viewModelForum: ForumViewModel,
     onNavigateToRegister: () -> Unit = {},
     onNavigateToCalendar: () -> Unit = {}
 ) {
@@ -100,10 +105,12 @@ fun HomeScreen(
    }
 
     var selectedDay by remember { mutableStateOf(itensCarrossel[1]) }
+    val articlesAPI by viewModelForum.articles.collectAsState()
 
     val scrollState = rememberScrollState()
     LaunchedEffect(Unit) {
         viewModel.carregarStatusHoje()
+        viewModelForum.carregarArticles()
     }
     Column(
         modifier = Modifier
@@ -168,10 +175,11 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Carrossel de notícias de saúde
+            // Carrossel de notícias de saúde AQUI!!!!                 !
             NewsCarousel(
+                articlesList = articlesAPI.filter { it.category?.equals("saude", ignoreCase = true) ==true },
                 cardColor = Purple,
-                newsType = "saude"
+                categoriaLabel = "saude"
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -192,10 +200,11 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Carrossel de notícias de legislação
+            // Carrossel de notícias de legislação AQUI!!!!                         !!
             NewsCarousel(
+                articlesList = articlesAPI.filter { it.category?.equals("lesgilacao", ignoreCase = true) ==true },
                 cardColor = LightPink,
-                newsType = "legislacao"
+                categoriaLabel = "legislacao"
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -347,10 +356,9 @@ fun Banner() {
 // Card de Notícia
 @Composable
 fun NewsCard(
-    imageResId: Int,
-    title: String,
-    description: String,
+    articles: Articles,
     cardColor: Color,
+    categoriaLabel: String,
     onClick: () -> Unit = {}
 ) {
     Card(
@@ -376,7 +384,7 @@ fun NewsCard(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(id = imageResId),
+                    painter = painterResource(R.drawable.lotus),
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
@@ -391,7 +399,7 @@ fun NewsCard(
                 color = Color.White
             ) {
                 Text(
-                    text = if (cardColor == Purple) "Saúde" else "Legislação",
+                    text = categoriaLabel,
                     fontSize = 10.sp,
                     color = cardColor,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
@@ -402,7 +410,7 @@ fun NewsCard(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = title,
+                text = articles.title,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
@@ -413,7 +421,7 @@ fun NewsCard(
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = description,
+                text = "futura legenda aqui não se preocuope",
                 fontSize = 12.sp,
                 color = Color(0xFF666666),
                 maxLines = 2
@@ -425,55 +433,34 @@ fun NewsCard(
 // Carrossel de Notícias
 @Composable
 fun NewsCarousel(
+    articlesList: List<Articles>,
     cardColor: Color,
-    newsType: String
+    categoriaLabel: String
 ) {
 
-    val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
-    data class NewsItem(
-        val id: Int,
-        val imageResId: Int,
-        val title: String,
-        val description: String,
-        val url: String
-    )
-
-    val newsItems = remember(newsType) {
-        if (newsType == "saude") {
-            listOf(
-                NewsItem(0, R.drawable.lotus, "Como melhorar sua saúde mental", "Dicas simples para o dia a dia que podem transformar sua vida.", "https://helloclue.com/pt/artigos/emocoes/alteracoes-de-humor-e-o-ciclo-menstrual-tpm-e-tdpm"),
-                NewsItem(1, R.drawable.lotus, "Benefícios da atividade física", "Descubra como pequenos movimentos fazem diferença.", "https://korui.com.br/blogs/news/exercicio-fisico-e-as-fases-do-ciclo-menstrual-adapte-seu-treino?gad_source=1&gad_campaignid=23791972702&gbraid=0AAAAACEab0U9stZyfSuYrujKf6hrfMjQP&gclid=CjwKCAjwidXQBhAZEiwA4egw6Eo2Y3s5AN5Q8bUT5QjFeQMbLqiNSHrWTZRYf7Ro4r5xukyu0cbY6BoC7UoQAvD_BwE"),
-                NewsItem(2, R.drawable.lotus, "Alimentação saudável na rotina", "Receitas fáceis e nutritivas para o seu dia.","https://nutrium.com/blog/pt-br/o-ciclo-menstrual-como-se-alimentar-de-acordo-com-ele/"),
-                NewsItem(3, R.drawable.lotus, "Sono reparador: guia completo", "Técnicas para melhorar sua qualidade de sono.","https://www.saudemental.ufscar.br/pt-br/orientacoes/como-melhorar-a-qualidade-do-sono"),
-                NewsItem(4, R.drawable.lotus, "Prevenção é o melhor caminho", "Exames e cuidados que você não pode ignorar.","https://www.goldenclinic.com.br/blog/item/72-a-import%C3%A2ncia-da-consulta-ginecol%C3%B3gica")
-            )
-        } else {
-            listOf(
-                NewsItem(0, R.drawable.lotus, "Nova lei de saúde pública", "Entenda como a nova legislação impacta seu dia a dia.", "https://www.planalto.gov.br/ccivil_03/leis/l8080.htm"),
-                NewsItem(1, R.drawable.lotus, "Direitos das gestantes", "Conheça seus direitos e benefícios durante a gestação.", "https://www.gov.br/mdh/pt-br/assuntos/noticias/2023/maio/voce-conhece-os-direitos-das-gestantes-confira-os-principais-mecanismos-de-protecao"),
-                NewsItem(2, R.drawable.lotus, "Atualizações no SUS", "Saiba o que mudou no sistema público de saúde.", "https://www.gov.br/saude/pt-br"),
-                NewsItem(3, R.drawable.lotus, "Telemedicina: o que diz a lei", "Regulamentações e permissões para consultas remotas.", "https://www.in.gov.br/en/web/dou/-/lei-n-14.510-de-27-de-dezembro-de-2022-453982424"),
-                NewsItem(4, R.drawable.lotus, "Leis de proteção à mulher", "Legislação e segurança jurídica sobre campanhas de prevenção.", "https://www.institutomariadanapenha.org.br/lei-maria-da-penha.html")
-            )
-        }
-    }
+    val uriHandler = LocalUriHandler.current
 
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(horizontal = 8.dp)
     ) {
-        items(newsItems) { item ->
+        items(articlesList) { article ->
             NewsCard(
-                imageResId = item.imageResId,
-                title = item.title,
-                description = item.description,
+                articles = article,
                 cardColor = cardColor,
+                categoriaLabel = categoriaLabel,
                 onClick = {
-                    try {
-                        uriHandler.openUri(item.url)
-                    } catch (e: Exception) {
-                        android.util.Log.e("NAV_ERROR", "Não foi possível abrir a URL: ${item.url}", e)
+                    article.link?.let { link ->
+                        try {
+                            uriHandler.openUri(article.link)
+                        } catch (e: Exception) {
+                            Log.e(
+                                "NAV_ERROR",
+                                "Não foi possível abrir a URL: ${article.link}",
+                                e
+                            )
+                        }
                     }
                 }
             )
@@ -615,8 +602,11 @@ fun MainNavGraph(
                 navController.getBackStackEntry(navController.graph.startDestinationId)
             }
             val sharedViewModel: CalendarViewModel = hiltViewModel(parentEntry)
+            val viewModelForum: ForumViewModel = hiltViewModel(parentEntry)
+
             HomeScreen(
                 viewModel = sharedViewModel,
+                viewModelForum = viewModelForum,
                 onNavigateToRegister = { navController.navigate("register") },
                 onNavigateToCalendar = { navController.navigate(Destination.Calendar.route) },
             )

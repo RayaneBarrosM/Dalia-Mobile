@@ -116,6 +116,7 @@ fun AppNavigation() {
 
         composable("quizPeriod") {
             QuizPeriodScreen(viewModel = viewmodelQuiz,
+
                 onQuizComplete = {
                     navController.navigate("home") {
                         popUpTo("quizPeriod"){inclusive = true}
@@ -138,6 +139,7 @@ fun AppNavigation() {
         composable("home"){
             HomeScreen(
                 viewModel = viewmodelCalendar,
+                viewModelForum = viewModelForum,
                 onNavigateToRegister = {
                     navController.navigate("register")
                 },

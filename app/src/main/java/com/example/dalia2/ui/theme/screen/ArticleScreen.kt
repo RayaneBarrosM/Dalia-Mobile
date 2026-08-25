@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.example.dalia2.R
 import com.example.dalia2.ui.theme.Dalia2Theme
 
-data class NewsItem(
+data class ArticleItem(
     val id: String,
     val title: String,
     val description: String = "",
@@ -53,7 +53,7 @@ data class NewsItem(
 )
 @Composable
 fun ArticleScreen(
-    newsItem: NewsItem,
+    articleItem: ArticleItem,
     onBackClick: () -> Unit = {},
     onBookmarkClick: () -> Unit = {},
     onShareClick: () -> Unit = {}
@@ -128,7 +128,7 @@ fun ArticleScreen(
 
             // Título do Artigo
             Text(
-                text = newsItem.title,
+                text = articleItem.title,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Color.Black
@@ -143,7 +143,7 @@ fun ArticleScreen(
             ) {
                 //Essa parte deve ser auterada para conseguir usar a imagem correta
                 Image(
-                    painter = painterResource(id = authorImage),
+                    painter = painterResource(R.drawable.lotus),
                     contentDescription = "Foto do Autor",
                     modifier = Modifier
                         .size(48.dp) // Corrigido tamanho da foto de perfil
@@ -154,7 +154,7 @@ fun ArticleScreen(
                 Spacer(modifier = Modifier.width(12.dp))
 
                 Text(
-                    text = newsItem.authorName,
+                    text = articleItem.authorName,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color.Black.copy(alpha = 0.7f)
@@ -163,7 +163,7 @@ fun ArticleScreen(
                 Spacer(modifier = Modifier.weight(1f))
 
                 Text(
-                    text = newsItem.publishedTimeAgo,
+                    text = articleItem.publishedTimeAgo,
                     fontSize = 14.sp,
                     color = Color.Black.copy(alpha = 0.5f)
                 )
@@ -173,7 +173,7 @@ fun ArticleScreen(
 
             // Corpo do Texto
             Text(
-                text = newsItem.content,
+                text = articleItem.content,
                 fontSize = 15.sp,
                 color = Color.Black.copy(alpha = 0.85f),
                 lineHeight = 22.sp
@@ -189,7 +189,7 @@ fun ArticleScreen(
 fun ArticleScreenPreview() {
     Dalia2Theme {
         // Exemplo de como a sua lista ou ViewModel alimentará o item
-        val artigoExemplo = NewsItem(
+        val artigoExemplo = ArticleItem(
             id = "1",
             title = "Cuidados na gestação",
             description = "Tudo sobre o primeiro trimestre.", // Vai para o Card
@@ -201,6 +201,6 @@ fun ArticleScreenPreview() {
             categoryTag = "Gestante",
             imageResId = R.drawable.lotus
         )
-        ArticleScreen(newsItem = artigoExemplo)
+        ArticleScreen(articleItem = artigoExemplo)
     }
 }

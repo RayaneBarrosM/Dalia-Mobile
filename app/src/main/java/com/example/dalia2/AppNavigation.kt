@@ -2,13 +2,14 @@ package com.example.dalia2
 
 import CreatePostScreen
 import android.util.Log
-import androidx.activity.ComponentActivity
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.navigation.compose.NavHost
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.activity.compose.LocalActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -20,6 +21,7 @@ import com.example.dalia2.ui.theme.viewmodel.ForumViewModel
 import com.example.dalia2.ui.theme.viewmodel.PregnancyQuizViewModel
 import com.example.dalia2.ui.theme.viewmodel.ProfileViewModel
 import com.example.dalia2.ui.theme.viewmodel.QuizViewModel
+import com.example.dalia2.ui.theme.viewmodel.ModeViewModel
 
 // implementar viewModel para o salvamento no banco de dados
 fun saveData(month: Int, weeks: Int) {
@@ -37,19 +39,25 @@ fun AppNavigation() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val viewmodelQuiz: QuizViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
-    val viewmodelCalendar: CalendarViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
-    val viewModelForum: ForumViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
-    val viewModelPregnancyQuiz: PregnancyQuizViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
+    val modeViewModel: ModeViewModel = hiltViewModel()
+    val viewmodelQuiz: QuizViewModel = hiltViewModel()
+    val viewmodelCalendar: CalendarViewModel = hiltViewModel()
+    val viewModelForum: ForumViewModel = hiltViewModel()
+    val viewModelPregnancyQuiz: PregnancyQuizViewModel = hiltViewModel()
 
+    // Coleta do estado de gravidez
+    val isPregnantMode by modeViewModel.isPregnantMode.collectAsState()
 
     // Lista de rotas onde a barra deve aparecer
-    val bottomBarRoutes = listOf("home", "calendar", "bot", "forum", "settings")
+    val bottomBarRoutes = listOf("home", "homePregnant","calendar", "calendarPregnant", "bot", "forum", "settings")
 
     Scaffold(
         bottomBar = {
             if (currentRoute in bottomBarRoutes) {
-                BottomNavigationBar(navController)
+                BottomNavigationBar(
+                    navController = navController,
+                    isPregnantMode = isPregnantMode
+                )
             }
         }
     ) { padding ->
@@ -128,8 +136,10 @@ fun AppNavigation() {
         composable("quizPregnant") {
             QuizPregnantScreen(viewModel = viewModelPregnancyQuiz,
                 onQuizComplete = {
+                    modeViewModel.setPregnantMode(true) // Ativa o modo gravidez no estado global
+                    modeViewModel.setPregnantMode(true)
                     navController.navigate("homePregnant") {
-                        popUpTo("quizPregnant"){inclusive = true}
+                        popUpTo("quizPregnant") { inclusive = true }
                     }
                 }
             )
@@ -148,7 +158,14 @@ fun AppNavigation() {
         }
 
         composable("homePregnant") {
-            HomePregnantScreen()
+            HomePregnantScreen(
+                onNavigateToRegister = {
+                    navController.navigate("register")
+                },
+                onNavigateToCalendar = {
+                    navController.navigate("calendarPregnant")
+                }
+            )
         }
 
 
@@ -193,6 +210,10 @@ fun AppNavigation() {
 
         composable("calendar") {
             CalendarScreen()
+        }
+
+        composable("calendarPregnant"){
+            CalendarPregnantScreen()
         }
 
         composable("bot") {

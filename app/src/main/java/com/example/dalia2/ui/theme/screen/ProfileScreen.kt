@@ -223,6 +223,11 @@ fun ProfileScreen(
                     );
 
                     InfoSection(
+                        label = "modo",
+                        value = state?.currentMode.toString()
+                    )
+
+                    InfoSection(
                         label = "Anticoncepcional",
                         value = if (state?.search?.useContraceptive ?: true) "Sim" else "Não"
                     )

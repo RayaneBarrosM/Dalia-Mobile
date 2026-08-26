@@ -3,22 +3,10 @@ package com.example.dalia2.ui.theme.screen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.*
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -26,10 +14,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.ColorFilter
 import com.example.dalia2.R
 import com.example.dalia2.ui.theme.Black
 import com.example.dalia2.ui.theme.BlueButton
@@ -73,7 +57,9 @@ data class NewsItem(
 @Composable
 fun HomePregnantScreen(
     onNavigateToRegister: () -> Unit = {},
-    onNavigateToCalendar: () -> Unit = {}
+    onNavigateToCalendar: () -> Unit = {},
+    onNavigateToArticle: (String) -> Unit = {},
+    onNavigateToGeneralNews: () -> Unit = {}
 ) {
     val meusDados = listOf(
         MeuItemPregnant(1, 1, 2, "grão de mostarda", 1)
@@ -192,7 +178,7 @@ fun HomePregnantScreen(
                     modifier = Modifier
                         .weight(1f)
                         .height(160.dp)
-                        .clickable { /* Ação */ },
+                        .clickable { onNavigateToRegister() },
                     shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(containerColor = BlueButton)
                 ) {
@@ -232,10 +218,8 @@ fun HomePregnantScreen(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Image(
-                            painter = painterResource(id = R.drawable.pop_heartcalendar),
-                            contentDescription = null,
-                            modifier = Modifier.size(50.dp),
-                            colorFilter = ColorFilter.tint(Color(0xFFF5E6))
+                            painter = painterResource(id = R.drawable.heartcalendar),
+                            contentDescription = null
                         )
                         Text(
                             text = "Carteira de vacinação e consultas",
@@ -263,7 +247,7 @@ fun HomePregnantScreen(
                 cardColor = Purple,
                 newsItems = noticiasDiarias,
                 onNewsClick = { newsId ->
-                    // Redireciona para página do post
+                    onNavigateToArticle(newsId)// Redireciona para página do post
                 }
             )
 
@@ -296,7 +280,7 @@ fun HomePregnantScreen(
                 // Botão: "Saiba mais"
                 Row(
                     modifier = Modifier.clickable {
-                        /* Ação ao clicar em Saiba Mais */
+                        onNavigateToGeneralNews()
                     },
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -316,7 +300,7 @@ fun HomePregnantScreen(
                 cardColor = Red,
                 newsItems = noticiasLegislacao,
                 onNewsClick = { newsId ->
-                    // Redireciona para página do post
+                    onNavigateToArticle(newsId)
                 }
             )
 
@@ -451,6 +435,7 @@ fun NewsCarouselPregnant(
         }
     }
 }
+
 
 @Preview(showBackground = true, heightDp = 2000)
 @Composable

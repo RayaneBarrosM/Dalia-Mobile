@@ -6,14 +6,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dalia2.data.model.AppMode
 import com.example.dalia2.data.model.ProfileRequest
 import com.example.dalia2.data.model.ProfileResponse
 import com.example.dalia2.data.repository.DaliaRepository
 import com.example.dalia2.data.session.UserSession
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
@@ -30,6 +34,17 @@ class ProfileViewModel @Inject constructor(
         private set
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+
+    private val _perfil = MutableStateFlow<ProfileResponse?>(null)
+    val perfil: StateFlow<ProfileResponse?> = _perfil.asStateFlow()
+
+    val currentMode: StateFlow<AppMode> = _perfil.map {profile ->
+        profile?.currentMode ?: AppMode.MENSTRUACAO
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = AppMode.MENSTRUACAO
+    )
 
     fun loadUserProfile() {
         viewModelScope.launch {

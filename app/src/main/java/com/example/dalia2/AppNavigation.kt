@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.navigation.compose.NavHost
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -37,19 +38,24 @@ fun AppNavigation() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
+    val viewmodelProfile: ProfileViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
     val viewmodelQuiz: QuizViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
     val viewmodelCalendar: CalendarViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
     val viewModelForum: ForumViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
     val viewModelPregnancyQuiz: PregnancyQuizViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
 
+    val currentMode by viewmodelProfile.currentMode.collectAsState()
 
     // Lista de rotas onde a barra deve aparecer
-    val bottomBarRoutes = listOf("home", "calendar", "bot", "forum", "settings")
+    val bottomBarRoutes = listOf("home", "homePregnant","calendar", "calendarPregnant", "bot", "forum", "settings")
 
     Scaffold(
         bottomBar = {
             if (currentRoute in bottomBarRoutes) {
-                BottomNavigationBar(navController)
+                BottomNavigationBar(
+                    navController = navController,
+                    currentMode = currentMode
+                )
             }
         }
     ) { padding ->
@@ -150,12 +156,29 @@ fun AppNavigation() {
         }
 
         composable("homePregnant") {
-            HomePregnantScreen()
+            HomePregnantScreen(
+                onNavigateToRegister = {
+                    navController.navigate("register")
+                },
+                onNavigateToCalendar = {
+                    navController.navigate("calendarPregnant")
+                },
+                onNavigateToArticle = {
+                    navController.navigate("articleScreen")
+                },
+                onNavigateToGeneralNews = {
+                    navController.navigate("generalNews")
+                }
+            )
         }
 
 
         composable("register") {
             RegisterScreen()
+        }
+
+        composable("calendarPregnant"){
+            CalendarPregnantScreen()
         }
 
         composable ("calendar"){
@@ -242,6 +265,19 @@ fun AppNavigation() {
                     navController.navigate("quizPregnant") //Vai ter que criar um view model para saber em qual modo está
                 }
             )
+        }
+        composable("articleScreen/{articleId}") { backStackEntry ->
+            val articleId = backStackEntry.arguments?.getString("articleId") ?: ""
+            ArticleScreen(
+                articleItem = TODO(),
+                onBackClick = TODO(),
+                onBookmarkClick = TODO(),
+                onShareClick = TODO()
+            )
+        } //Muda a tela pela id do card
+
+        composable("generalNews") {
+            GeneralNewsScreen()
         }
 
     }}

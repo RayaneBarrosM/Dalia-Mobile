@@ -85,3 +85,4 @@ data class PregnancyRequest(
     val habits: List<String>,
     val symptoms: List<String>
 )
+

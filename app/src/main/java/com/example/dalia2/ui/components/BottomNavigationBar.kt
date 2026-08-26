@@ -7,10 +7,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.dalia2.data.model.AppMode
 
 @Composable
 fun BottomNavigationBar(
     navController: NavController,
+    currentMode: AppMode,
     modifier: Modifier = Modifier
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -23,17 +25,21 @@ fun BottomNavigationBar(
         windowInsets = NavigationBarDefaults.windowInsets
     ) {
         Destination.items.forEach { destination ->
-            val isSelected = currentRoute == destination.route
+            val isSelected = isDestinationSelected(destination, currentRoute)//Para deixar a aba em destaque e diferenciar as telas de home e calendar
 
             NavigationBarItem(
                 selected = isSelected,
                 onClick = {
-                    navController.navigate(destination.route) {
-                        popUpTo(navController.graph.startDestinationId) {
-                            saveState = true
+                    val targetRoute = getTargetRoute(destination, currentMode)
+
+                    if (currentRoute != targetRoute) { //Impede que a tela reinicie no modo errado
+                        navController.navigate(targetRoute) {
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
                         }
-                        launchSingleTop = true
-                        restoreState = true
                     }
                 },
                 icon = {
@@ -65,5 +71,23 @@ fun BottomNavigationBar(
                 )
             )
         }
+    }
+}
+
+// Funções Auxiliares de Decisão de Rota para ajudar na persistencia
+private fun getTargetRoute(destination: Destination, currentMode: AppMode): String {
+    val isPregnant = currentMode == AppMode.GRAVIDEZ
+    return when (destination) {
+        Destination.Home -> if (isPregnant) "homePregnant" else "home"
+        Destination.Calendar -> if (isPregnant) "calendarPregnant" else "calendar"
+        else -> destination.route
+    }
+}
+
+private fun isDestinationSelected(destination: Destination, currentRoute: String?): Boolean {
+    return when (destination) {
+        Destination.Home -> currentRoute == "home" || currentRoute == "homePregnant"
+        Destination.Calendar -> currentRoute == "calendar" || currentRoute == "calendarPregnant"
+        else -> currentRoute == destination.route
     }
 }

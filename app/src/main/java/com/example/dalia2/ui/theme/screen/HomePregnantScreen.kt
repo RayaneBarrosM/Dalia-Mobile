@@ -34,16 +34,11 @@ import com.example.dalia2.ui.theme.BlueButton
 import com.example.dalia2.ui.theme.Purple
 import com.example.dalia2.ui.theme.Red
 import com.example.dalia2.ui.theme.Dalia2Theme
+import com.example.dalia2.ui.theme.viewmodel.PregnancyCalendarViewModel
+
 //import io.coil.compose.AsyncImage
 
 // Data class
-data class MeuItemPregnant(
-    val id: Int,
-    val tamanhoCm: Int,
-    val peso: Int,
-    val tamanho: String,
-    val semana: Int
-)
 
 data class NewsItem(
     val id: String,
@@ -56,14 +51,12 @@ data class NewsItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePregnantScreen(
+    viewModel: PregnancyCalendarViewModel,
     onNavigateToRegister: () -> Unit = {},
     onNavigateToCalendar: () -> Unit = {},
     onNavigateToArticle: (String) -> Unit = {},
     onNavigateToGeneralNews: () -> Unit = {}
 ) {
-    val meusDados = listOf(
-        MeuItemPregnant(1, 1, 2, "grão de mostarda", 1)
-    )
 
     val noticiasDiarias = remember {
         listOf(
@@ -79,8 +72,14 @@ fun HomePregnantScreen(
         )
     }
 
-    val scrollState = rememberScrollState()
-    var selectedDay by remember { mutableStateOf(meusDados[0]) } // Corrigido para índice 0
+    val semana by viewModel.semana.collectAsState()
+
+// E usar semanaAtual?.tamanhoCm, semanaAtual?.peso, etc.
+    val scrollState = rememberScrollState() // Corrigido para índice 0
+
+    LaunchedEffect(Unit){
+        viewModel.inciarDados()
+    }
 
     Column(
         modifier = Modifier
@@ -111,7 +110,7 @@ fun HomePregnantScreen(
                 ) {
                     Column(horizontalAlignment = Alignment.Start) {
                         Text(text = "Tamanho", fontSize = 14.sp, color = Color.DarkGray)
-                        Text(text = "${selectedDay.tamanhoCm} cm", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text(text = "${semana?.tamanho} cm", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
 
                     Box(
@@ -131,19 +130,24 @@ fun HomePregnantScreen(
 
                     Column(horizontalAlignment = Alignment.End) {
                         Text(text = "Peso", fontSize = 14.sp, color = Color.DarkGray)
-                        Text(text = "${selectedDay.peso} g", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text(text = "${semana?.peso} g", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "O bebê está do tamanho de um ${selectedDay.tamanho}",
+                    text = "O bebê está do tamanho de um ${semana?.comidaAssociada}",
                     fontSize = 14.sp,
                     color = Color.Black
                 )
                 Text(
-                    text = "Semana ${selectedDay.semana}",
+                    text = "${semana?.frase}",
+                    fontSize = 14.sp,
+                    color = Color.Black
+                )
+                Text(
+                    text = "Semana ${semana?.semana}",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
@@ -441,6 +445,6 @@ fun NewsCarouselPregnant(
 @Composable
 fun HomePregnantScreenPreview() {
     Dalia2Theme {
-        HomePregnantScreen()
+        //HomePregnantScreen()
     }
 }

@@ -18,6 +18,7 @@ import com.example.dalia2.ui.components.BottomNavigationBar
 import com.example.dalia2.ui.theme.screen.*
 import com.example.dalia2.ui.theme.viewmodel.CalendarViewModel
 import com.example.dalia2.ui.theme.viewmodel.ForumViewModel
+import com.example.dalia2.ui.theme.viewmodel.PregnancyCalendarViewModel
 import com.example.dalia2.ui.theme.viewmodel.PregnancyQuizViewModel
 import com.example.dalia2.ui.theme.viewmodel.ProfileViewModel
 import com.example.dalia2.ui.theme.viewmodel.QuizViewModel
@@ -38,6 +39,7 @@ fun AppNavigation() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
+    val viewmodelPregnancyCalendar: PregnancyCalendarViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
     val viewmodelProfile: ProfileViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
     val viewmodelQuiz: QuizViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
     val viewmodelCalendar: CalendarViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
@@ -157,6 +159,7 @@ fun AppNavigation() {
 
         composable("homePregnant") {
             HomePregnantScreen(
+                viewModel = viewmodelPregnancyCalendar,
                 onNavigateToRegister = {
                     navController.navigate("register")
                 },

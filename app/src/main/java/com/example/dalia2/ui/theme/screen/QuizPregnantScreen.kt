@@ -46,7 +46,7 @@ fun QuizPregnantScreen (
     // Lista das perguntas na ordem correta
     val perguntas = listOf(
         Pergunta(
-            titulo = "Confirme sua ultima menstruação", tipo = TipoPergunta.DATA, campo = "ultimaMenstruacao"
+            titulo = "Data estiamda de inicio de gestação", tipo = TipoPergunta.DATA, campo = "inicio de gestação"
         ),
         Pergunta(titulo ="Quantas semenas de gestação você tem?", tipo = TipoPergunta.NUMERO, campo = "qtdSemanas"),
         Pergunta(titulo ="Qual a previsão de nascimento?", tipo = TipoPergunta.DATA, campo = "previsaoNascimento"),

@@ -146,37 +146,4 @@ class CalendarViewModel @Inject constructor(
         }
         return datas
     }
-   /* private fun listarDatas(cycleData: CycleData?) {
-        if (cycleData == null) return
-        val inicioM = cycleData.lastMenstruationDay
-        var fimM = cycleData.fimMenstruacao
-
-        if (fimM.isBefore(inicioM)) {
-            fimM = inicioM.plusDays(4)
-        }
-        _diasMenstruacao.value = gerarListaDatas(cycleData.lastMenstruationDay, cycleData.fimMenstruacao)
-
-        _diasFertil.value = gerarListaDatas(cycleData.inicioPeriodoFertil, cycleData.fimPeriodoFertil)
-        _diaOvulacao.value = cycleData.diaOvulacao
-
-    }
-
-    private fun gerarListaDatas(inicio: LocalDate, fim: LocalDate): List<LocalDate> {
-        val datas = mutableListOf<LocalDate>()
-        var atual = inicio
-        while (!atual.isAfter(fim)) {
-            datas.add(atual)
-            atual = atual.plusDays(1)
-        }
-        return datas
-    }
-
-    fun getStatusDoDia(data: LocalDate): String {
-        return when {
-            _diasMenstruacao.value.contains(data) -> "MENSTRUAÇÃO"
-            _diaOvulacao.value == data -> "OVULAÇÃO"
-            _diasFertil.value.contains(data) -> "PERIODO FERTIL"
-            else -> ""
-        }
-    }*/
 }

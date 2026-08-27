@@ -14,13 +14,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
 class PregnancyQuizViewModel @Inject constructor(
     private val repository: DaliaRepository
 ) : ViewModel(){
-    private val _uiState = MutableStateFlow(PregnancyRequest(true, 0, "", false, false, emptyList(), emptyList()))
+    private val _uiState = MutableStateFlow(PregnancyRequest(true, "", 0, "", false, false, emptyList(), emptyList()))
 
 
     var isLoading by mutableStateOf(false)
@@ -34,6 +35,9 @@ class PregnancyQuizViewModel @Inject constructor(
 
     fun updateGravida(isPregnant: Boolean) {
         _uiState.update { it.copy(isPregnant = true) }
+    }
+    fun updateInicio(startDate: String) {
+        _uiState.update { it.copy(startDate = startDate) }
     }
     fun updateSemanas(gestationWeeks: Int) {
         _uiState.update { it.copy(gestationWeeks = gestationWeeks) }
@@ -56,6 +60,7 @@ class PregnancyQuizViewModel @Inject constructor(
 
     fun atualizarDadosQuiz(campo: String, valor: Any) {
         when (campo) {
+            "inicio de gestação" -> updateInicio(valor as String)
             "qtdSemanas" -> updateSemanas(valor as Int)
             "previsaoNascimento" -> updateNascBebe(valor as String)
             "planejado" -> updatePlanejado(valor as Boolean)

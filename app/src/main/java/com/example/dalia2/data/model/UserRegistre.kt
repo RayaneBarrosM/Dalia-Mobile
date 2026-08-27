@@ -78,11 +78,20 @@ data class CycleData(
 
 data class PregnancyRequest(
     val isPregnant: Boolean,
+    val startDate: String,
     val gestationWeeks: Int,
     val expectedBirthDate: String,
     val plannedPregnancy: Boolean,
     val takeMedicine: Boolean,
     val habits: List<String>,
     val symptoms: List<String>
+)
+
+data class Weeks(
+    val semana: Int,
+    val tamanho: String,
+    val peso: String,
+    val comidaAssociada: String,
+    val frase: String
 )
 

@@ -71,6 +71,11 @@ interface ApiService {
         @Body request: PregnancyRequest
     ): Response<PregnancyRequest>
 
+    @GET("/api/pregnancy/semana/{semana}")
+    suspend fun getWeeks(
+        @Path("semana") semana: Int,
+    ): Response<Weeks>
+
     //FORUM
     @GET("/api/posts/getTodos")
     suspend fun getPosts (

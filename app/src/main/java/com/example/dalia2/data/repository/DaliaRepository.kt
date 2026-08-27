@@ -19,9 +19,11 @@ import com.example.dalia2.data.model.TokensResponse
 import com.example.dalia2.data.model.UserRegistre
 import com.example.dalia2.data.model.UserResponse
 import com.example.dalia2.data.model.VerificationRequest
+import com.example.dalia2.data.model.Weeks
 import com.example.dalia2.data.session.UserSession
 import com.example.dalia2.network.ApiService
 import okhttp3.RequestBody
+import java.time.LocalDate
 import javax.inject.Inject
 
 class DaliaRepository @Inject constructor(
@@ -217,6 +219,34 @@ class DaliaRepository @Inject constructor(
             Result.failure(e)
         }
     }
+
+    suspend fun getWeek(week: Int): Result<Weeks> {
+        return try{
+            val response = api.getWeeks(week)
+            if(response.isSuccessful) {
+                Result.success(response.body()!!)
+            } else {
+                Result.failure(Exception("Error pegar dados da semana"))
+            }
+        } catch (e: Exception) {
+            Log.e("REPO_EXCEPTION", "Falha ao pegar dados da semana", e)
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getDataInicio(): String? {
+        return try {
+            val userProfile = api.getPerfil() // Chama endpoint do perfil
+            val dataStr = userProfile.body()?.pregnancy?.startDate // Pega o campo da data
+                if (dataStr != null) {
+                    dataStr.toString()
+                } else {
+                    null
+                }
+            } catch (e: Exception) {
+                null
+            }
+        }
 
     suspend fun getArticles(): Result<List<Articles>> {
         return try {

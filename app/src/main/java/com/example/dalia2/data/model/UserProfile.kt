@@ -1,5 +1,7 @@
 package com.example.dalia2.data.model
 
+import java.time.LocalDate
+
 data class ProfileResponse(
     val user: UserRequest,
     val search: SearchData?,
@@ -27,6 +29,7 @@ data class SearchData(
 
 data class PregnancyData(
     val isPregnant: Boolean,
+    val startDate: String,
     val gestationWeeks: Int,
     val expectedBirthDate: String,
 )

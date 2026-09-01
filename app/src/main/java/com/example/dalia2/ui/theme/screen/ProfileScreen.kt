@@ -40,6 +40,7 @@ import android.provider.Settings
 import android.util.Log
 import androidx.compose.foundation.verticalScroll
 import com.example.dalia2.R
+import com.example.dalia2.data.model.AppMode
 import com.example.dalia2.ui.theme.Dalia2Theme
 import com.example.dalia2.ui.theme.GrayButton
 import com.example.dalia2.ui.theme.PinkButton
@@ -71,6 +72,8 @@ fun ProfileScreen(
     val telefoneUsuario =
         state?.user?.email ?: "Não informado" // Adapte para state?.user?.telefone se houver
 
+    val currentMode = state?.currentMode ?: AppMode.MENSTRUACAO //[cite: 3, 4]
+    val isModoGravidez = currentMode == AppMode.GRAVIDEZ
     var showModeDialog by remember { mutableStateOf(false) }
     var isPregnancyMode by remember { mutableStateOf(false) }
     var showReportDialog by remember { mutableStateOf(false) }
@@ -223,19 +226,36 @@ fun ProfileScreen(
                     );
 
                     InfoSection(
-                        label = "modo",
-                        value = state?.currentMode.toString()
+                        label = "Modo Atual",
+                        value = if (isModoGravidez) "Gravidez" else "Menstruação"
                     )
 
-                    InfoSection(
-                        label = "Anticoncepcional",
-                        value = if (state?.search?.useContraceptive ?: true) "Sim" else "Não"
-                    )
-                    if (state?.search?.useContraceptive ?: true) {
+                    if (isModoGravidez) {
+                        // Exibe apenas se estiver no modo gravidez
                         InfoSection(
-                            label = "Tipo de Anticoncepcional",
-                            value = state?.search?.contraceptiveType ?: ""
+                            label = "Semanas de Gestação",
+                            value = "${state?.pregnancy?.gestationWeeks ?: 0} semanas"
                         )
+                        InfoSection(
+                            label = "Previsão do Parto",
+                            value = state?.pregnancy?.expectedBirthDate ?: "Não informada"
+                        )
+                    } else {
+                        // Exibe apenas se for menstruação
+                        InfoSection(
+                            label = "Idade",
+                            value = state?.search?.age?.toString() ?: ""
+                        )
+                        InfoSection(
+                            label = "Anticoncepcional",
+                            value = if (state?.search?.useContraceptive == true) "Sim" else "Não" //[cite: 2, 4]
+                        )
+                        if (state?.search?.useContraceptive == true) {
+                            InfoSection(
+                                label = "Tipo de Anticoncepcional",
+                                value = state?.search?.contraceptiveType ?: ""
+                            )
+                        }
                     }
                 }
             }
@@ -274,9 +294,9 @@ fun ProfileScreen(
                     )
 
                     SettingsButton(
-                        text = "Mudar para modo gravidez",
+                        text = if(isModoGravidez) "Mudar para modo menstruação" else "Mudar para modo gravidez",
                         icon = R.drawable.search_icon,
-                        onClick = { onChangeModeClick() },
+                        onClick = { showModeDialog = true },
                         backgroundColor = LightPink
                     )
 
@@ -339,19 +359,14 @@ fun ProfileScreen(
             if (showModeDialog) {
                 AlertDialog(
                     onDismissRequest = { showModeDialog = false },
-                    icon = {
-                        Icon(
-                            painter = painterResource(
-                                id = if (isPregnancyMode) R.drawable.pop_heartcalendar else R.drawable.pop_pregnance
-                            ),
-                            contentDescription = null,
-                            tint = Color.Unspecified,
-                            modifier = Modifier.size(64.dp)
-                        )
-                    },
-                    title = { Text("Atenção") },
+                    title = { Text("Trocar de Modo") },
                     text = {
-                        Text("Você está prestes a mudar para o modo ${if (isPregnancyMode) "menstruação" else "gravidez"}!")
+                        Text(
+                            if (isModoGravidez)
+                                "Deseja encerrar o acompanhamento de gestação e voltar para o ciclo menstrual?"
+                            else
+                                "Você está prestes a mudar para o modo gravidez!"
+                        )
                     },
                     confirmButton = {
                         TextButton(onClick = {

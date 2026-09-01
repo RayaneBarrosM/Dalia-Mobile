@@ -46,14 +46,15 @@ class ProfileViewModel @Inject constructor(
         initialValue = AppMode.MENSTRUACAO
     )
 
-    fun loadUserProfile() {
+    fun loadUserProfile(forceRefresh: Boolean = false) {
         viewModelScope.launch {
-            if(UserSession.profileCache == null){
+            if(UserSession.profileCache == null || forceRefresh){
                 isLoading = true
                 val response = repository.getUserFullProfile()
                 if (response.isSuccess) {
                     UserSession.profileCache = response.getOrNull()
                     _uiState = UserSession.profileCache
+                    _perfil.value = UserSession.profileCache
                 }
                 isLoading = false
             }else{

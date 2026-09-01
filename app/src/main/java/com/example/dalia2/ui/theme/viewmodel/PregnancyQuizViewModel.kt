@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.dalia2.data.model.PregnancyRequest
 import com.example.dalia2.data.model.SearchRequest
 import com.example.dalia2.data.repository.DaliaRepository
+import com.example.dalia2.data.session.UserSession
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -81,6 +82,7 @@ class PregnancyQuizViewModel @Inject constructor(
                 Log.d("TESTE", request.toString())
 
                 if(response.isSuccess){
+                    UserSession.profileCache = null
                     quizSuccess = true
                     Log.d("API_SUCESS","pequisa gravidez Salva")
                 }else{

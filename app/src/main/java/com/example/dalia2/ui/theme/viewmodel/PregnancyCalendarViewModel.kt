@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dalia2.data.model.EventCalendar
+import com.example.dalia2.data.model.Posts
 import com.example.dalia2.data.model.Weeks
 import com.example.dalia2.data.repository.DaliaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,6 +17,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
+import kotlin.math.log
 
 @HiltViewModel
 class PregnancyCalendarViewModel @Inject constructor(
@@ -25,12 +28,17 @@ class PregnancyCalendarViewModel @Inject constructor(
     var errorMessage by mutableStateOf<String?>(null)
         private set
 
-    var _uiState by mutableStateOf<Weeks?>(null)
+    //sobre o bebe
+
     private val _semana = MutableStateFlow<Weeks?>(null)
     val semana = _semana.asStateFlow()
 
     var semanaAtual by mutableStateOf(3)
         private set
+
+    //sobre o calendario
+
+    var _uiState by mutableStateOf<Weeks?>(null)
 
     fun inciarDados(){
         viewModelScope.launch {
@@ -58,6 +66,34 @@ class PregnancyCalendarViewModel @Inject constructor(
                     _semana.value = response.getOrThrow()
                 } else {
                     eventSucess = false
+                    errorMessage = response.exceptionOrNull()?.message ?: "Erro desconhecido"
+                    Log.d("API_ERROR", "Error na resposta: $errorMessage")
+                }
+            } catch (e: Exception) {
+                eventSucess = false
+                errorMessage = "Falha na conexão"
+                Log.d("API_ERROR", e.message.toString())
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun criarEvento(titulo: String, descricao: String, data: String, hora: String, local: String ){
+        viewModelScope.launch {
+            isLoading = true
+            Log.d("data: " + data, "hora: " + hora)
+
+            val novoEvento = EventCalendar(
+                titulo = titulo,
+                descricao = descricao,
+                data = data,
+                local = local
+            )
+            try{
+                val response = repository.createEventCalendar(novoEvento)
+                if(response.isSuccess){
+                    eventSucess = true
                     errorMessage = response.exceptionOrNull()?.message ?: "Erro desconhecido"
                     Log.d("API_ERROR", "Error na resposta: $errorMessage")
                 }

@@ -95,3 +95,9 @@ data class Weeks(
     val frase: String
 )
 
+data class EventCalendar(
+    val titulo: String,
+    val descricao: String,
+    val data: String,
+    val local:String
+)

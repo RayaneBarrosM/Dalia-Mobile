@@ -8,6 +8,7 @@ import com.example.dalia2.data.model.Articles
 import com.example.dalia2.data.model.Comments
 import com.example.dalia2.data.model.CycleData
 import com.example.dalia2.data.model.DenunciaResponse
+import com.example.dalia2.data.model.EventCalendar
 import com.example.dalia2.data.model.LoginRequest
 import com.example.dalia2.data.model.Posts
 import com.example.dalia2.data.model.PregnancyRequest
@@ -180,6 +181,31 @@ class DaliaRepository @Inject constructor(
                 if (cicloResponse != null) {
 
                     Result.success(cicloResponse)                } else {
+                    Result.failure(Exception("Corpo da resposta vazio"))
+                }
+            } else {
+                val errorCode = response.code()
+                val errorBody = response.errorBody()?.string() ?: "Erro desconhecido"
+                val cleanMessage = errorBody.replace(Regex("""\d{3}:\s*"""), "").replace("}", "")
+
+                Log.e("REPO_ERROR", "Código: $errorCode | Mensagem: $errorBody")
+                Result.failure(Exception(cleanMessage))
+            }
+        } catch (e: Exception) {
+            Log.e("REPO_EXCEPTION", "Falha catastrófica", e)
+            Result.failure(e)
+        }
+    }
+
+    suspend fun createEventCalendar(EventCalendar: EventCalendar): Result<EventCalendar> {
+        return try {
+            val response = api.createEvent(EventCalendar)
+            if (response.isSuccessful) {
+                val eventResponse = response.body()
+
+                if (eventResponse != null) {
+                    Result.success(eventResponse)
+                } else {
                     Result.failure(Exception("Corpo da resposta vazio"))
                 }
             } else {

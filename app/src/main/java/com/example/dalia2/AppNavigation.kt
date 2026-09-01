@@ -14,6 +14,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.dalia2.data.model.AppMode
 import com.example.dalia2.ui.components.BottomNavigationBar
 import com.example.dalia2.ui.theme.screen.*
 import com.example.dalia2.ui.theme.viewmodel.CalendarViewModel
@@ -126,6 +127,7 @@ fun AppNavigation() {
             QuizPeriodScreen(viewModel = viewmodelQuiz,
 
                 onQuizComplete = {
+                    viewmodelProfile.loadUserProfile(forceRefresh = true)
                     navController.navigate("home") {
                         popUpTo("quizPeriod"){inclusive = true}
                     }
@@ -137,6 +139,7 @@ fun AppNavigation() {
         composable("quizPregnant") {
             QuizPregnantScreen(viewModel = viewModelPregnancyQuiz,
                 onQuizComplete = {
+                    viewmodelProfile.loadUserProfile(forceRefresh = true)
                     navController.navigate("homePregnant") {
                         popUpTo("quizPregnant"){inclusive = true}
                     }
@@ -185,9 +188,7 @@ fun AppNavigation() {
         }
 
         composable ("calendar"){
-            /*onNavigateToRegister = {
-                navController.navigate("register")
-            }*/
+            CalendarScreen()
         }
 
         composable("forum") {
@@ -219,10 +220,6 @@ fun AppNavigation() {
             )
         }
 
-        composable("calendar") {
-            CalendarScreen()
-        }
-
         composable("bot") {
             DaliaBotScreen()
         }
@@ -251,10 +248,9 @@ fun AppNavigation() {
             )
         }
 
-        composable("settings") {backStackEntry ->
-            val viewModel: ProfileViewModel = hiltViewModel(backStackEntry)
+        composable("settings") {
             ProfileScreen(
-                viewModel = viewModel,
+                viewModel = viewmodelProfile,
                 onEditarClick = {
                     navController.navigate("editProfileScreen")
                 },
@@ -265,7 +261,23 @@ fun AppNavigation() {
                     navController.navigate("helpScreen")
                 },
                 onChangeModeClick ={
-                    navController.navigate("quizPregnant") //Vai ter que criar um view model para saber em qual modo está
+                    if (currentMode == AppMode.GRAVIDEZ) {
+                        navController.navigate("quizPeriod")
+                    } else {
+                        navController.navigate("quizPregnant")
+                    }
+                },
+                onBackClick = {
+                        // Volta para a Home correta de acordo com o modo atual
+                    if (currentMode == AppMode.GRAVIDEZ) {
+                        navController.navigate("homePregnant") {
+                            popUpTo("homePregnant") { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate("home") {
+                            popUpTo("home") { inclusive = true }
+                        }
+                    } //Vai ter que criar um view model para saber em qual modo está
                 }
             )
         }

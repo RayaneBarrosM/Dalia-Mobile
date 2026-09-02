@@ -358,7 +358,7 @@ fun EditProfileScreen(
                                 email = email?:"",
                                 password = if (senha.isBlank()) null else senha,
                                 search = search,
-                                pregnancy = null
+                                pregnancyMonitoring = null
                             )
 
                             // Agora passamos o objeto e a função de sucesso

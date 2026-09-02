@@ -263,7 +263,7 @@ class DaliaRepository @Inject constructor(
     suspend fun getDataInicio(): String? {
         return try {
             val userProfile = api.getPerfil() // Chama endpoint do perfil
-            val dataStr = userProfile.body()?.pregnancy?.startDate // Pega o campo da data
+            val dataStr = userProfile.body()?.pregnancyMonitoring?.startDate // Pega o campo da data
                 if (dataStr != null) {
                     dataStr.toString()
                 } else {

@@ -41,6 +41,7 @@ import android.util.Log
 import androidx.compose.foundation.verticalScroll
 import com.example.dalia2.R
 import com.example.dalia2.data.model.AppMode
+import com.example.dalia2.data.model.SearchData
 import com.example.dalia2.ui.theme.Dalia2Theme
 import com.example.dalia2.ui.theme.GrayButton
 import com.example.dalia2.ui.theme.PinkButton
@@ -75,7 +76,6 @@ fun ProfileScreen(
     val currentMode = state?.currentMode ?: AppMode.MENSTRUACAO //[cite: 3, 4]
     val isModoGravidez = currentMode == AppMode.GRAVIDEZ
     var showModeDialog by remember { mutableStateOf(false) }
-    var isPregnancyMode by remember { mutableStateOf(false) }
     var showReportDialog by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
 
@@ -234,21 +234,16 @@ fun ProfileScreen(
                         // Exibe apenas se estiver no modo gravidez
                         InfoSection(
                             label = "Semanas de Gestação",
-                            value = "${state?.pregnancy?.gestationWeeks ?: 0} semanas"
+                            value = "${state?.pregnancyMonitoring?.gestationWeeks ?: 0} semanas"
                         )
                         InfoSection(
                             label = "Previsão do Parto",
-                            value = state?.pregnancy?.expectedBirthDate ?: "Não informada"
+                            value = state?.pregnancyMonitoring?.expectedBirthDate ?: "Não informada"
                         )
                     } else {
-                        // Exibe apenas se for menstruação
-                        InfoSection(
-                            label = "Idade",
-                            value = state?.search?.age?.toString() ?: ""
-                        )
                         InfoSection(
                             label = "Anticoncepcional",
-                            value = if (state?.search?.useContraceptive == true) "Sim" else "Não" //[cite: 2, 4]
+                            value = if (state?.search?.useContraceptive == true) "Sim" else "Não"
                         )
                         if (state?.search?.useContraceptive == true) {
                             InfoSection(
@@ -295,22 +290,10 @@ fun ProfileScreen(
 
                     SettingsButton(
                         text = if(isModoGravidez) "Mudar para modo menstruação" else "Mudar para modo gravidez",
-                        icon = R.drawable.search_icon,
+                        icon = R.drawable.pop_pregnance,
                         onClick = { showModeDialog = true },
                         backgroundColor = LightPink
                     )
-
-                    Button(
-                        onClick = { },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = PinkButton
-                        )
-                    ) {
-                        Text("Mudar para modo gravidez")
-                    }
                 }
             }
 
@@ -370,10 +353,16 @@ fun ProfileScreen(
                     },
                     confirmButton = {
                         TextButton(onClick = {
-                            isPregnancyMode = !isPregnancyMode
                             showModeDialog = false
+                            if(isModoGravidez) {
+                                val searchAtual = state?.search ?: SearchData(age=18,useContraceptive = false,contraceptiveType = null)
+                                viewModel.retornaMenstrucao(searchAtual) {
+                                    onBackClick()
+                                }
+                            }else{
                             onChangeModeClick()
-                        }) {
+                            }
+                        }){
                             Text("Confirmar", color = PinkButton, fontWeight = FontWeight.Bold)
                         }
                     },

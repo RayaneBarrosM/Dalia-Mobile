@@ -125,7 +125,6 @@ fun AppNavigation() {
 
         composable("quizPeriod") {
             QuizPeriodScreen(viewModel = viewmodelQuiz,
-
                 onQuizComplete = {
                     viewmodelProfile.loadUserProfile(forceRefresh = true)
                     navController.navigate("home") {
@@ -261,23 +260,12 @@ fun AppNavigation() {
                     navController.navigate("helpScreen")
                 },
                 onChangeModeClick ={
-                    if (currentMode == AppMode.GRAVIDEZ) {
-                        navController.navigate("quizPeriod")
-                    } else {
-                        navController.navigate("quizPregnant")
-                    }
+                    navController.navigate("quizPregnant")
                 },
                 onBackClick = {
-                        // Volta para a Home correta de acordo com o modo atual
-                    if (currentMode == AppMode.GRAVIDEZ) {
-                        navController.navigate("homePregnant") {
-                            popUpTo("homePregnant") { inclusive = true }
-                        }
-                    } else {
-                        navController.navigate("home") {
-                            popUpTo("home") { inclusive = true }
-                        }
-                    } //Vai ter que criar um view model para saber em qual modo está
+                    navController.navigate("home") {
+                       popUpTo("home") { inclusive = true }
+                    }
                 }
             )
         }

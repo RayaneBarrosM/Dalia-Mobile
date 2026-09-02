@@ -5,20 +5,35 @@ import java.time.LocalDate
 data class ProfileResponse(
     val user: UserRequest,
     val search: SearchData?,
-    val pregnancy: PregnancyData?
+    val pregnancyMonitoring: PregnancyData?
 ){
     val currentMode: AppMode
-        get()=if(pregnancy != null && (pregnancy.isPregnant == true || pregnancy.gestationWeeks > 0)) {
-            AppMode.GRAVIDEZ
-        } else {
-            AppMode.MENSTRUACAO
+        get()= when{
+            user.modo.equals("GRAVIDEZ", ignoreCase = true) -> AppMode.GRAVIDEZ
+            user.modo.equals("MENSTRUACAO", ignoreCase = true) -> AppMode.MENSTRUACAO
+
+            pregnancyMonitoring != null && pregnancyMonitoring.isPregnant -> AppMode.GRAVIDEZ
+            else -> AppMode.MENSTRUACAO
         }
 }
+
+data class RetornoMenstruacaoRequest(
+    val modo: String = "MENSTRUACAO",
+    val search: SearchRequest,
+    val pregnancyMonitoring: PregnancyData = PregnancyData(
+        isPregnant = false,
+        startDate = "",
+        gestationWeeks = 0,
+        expectedBirthDate = ""
+    )
+)
+
 data class UserRequest(
     val name: String?,
     val surname: String?,
     val email: String?,
-    val password: String? = null
+    val password: String? = null,
+    val modo: String
 )
 
 data class SearchData(
@@ -39,8 +54,9 @@ data class ProfileRequest(
     val surname: String?,
     val email: String?,
     val password: String? = null,
+    val modo: String? = null,
     val search: SearchData?,
-    val pregnancy: PregnancyData?
+    val pregnancyMonitoring: PregnancyData?
 )
 
 data class DenunciaResponse(

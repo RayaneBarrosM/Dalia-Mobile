@@ -7,8 +7,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dalia2.data.model.AppMode
+import com.example.dalia2.data.model.PregnancyData
 import com.example.dalia2.data.model.ProfileRequest
 import com.example.dalia2.data.model.ProfileResponse
+import com.example.dalia2.data.model.SearchData
 import com.example.dalia2.data.repository.DaliaRepository
 import com.example.dalia2.data.session.UserSession
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,6 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.serialization.SealedClassSerializer
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import javax.inject.Inject
@@ -38,7 +41,7 @@ class ProfileViewModel @Inject constructor(
     private val _perfil = MutableStateFlow<ProfileResponse?>(null)
     val perfil: StateFlow<ProfileResponse?> = _perfil.asStateFlow()
 
-    val currentMode: StateFlow<AppMode> = _perfil.map {profile ->
+    val currentMode: StateFlow<AppMode> = _perfil.map { profile ->
         profile?.currentMode ?: AppMode.MENSTRUACAO
     }.stateIn(
         scope = viewModelScope,
@@ -48,7 +51,7 @@ class ProfileViewModel @Inject constructor(
 
     fun loadUserProfile(forceRefresh: Boolean = false) {
         viewModelScope.launch {
-            if(UserSession.profileCache == null || forceRefresh){
+            if (UserSession.profileCache == null || forceRefresh) {
                 isLoading = true
                 val response = repository.getUserFullProfile()
                 if (response.isSuccess) {
@@ -57,11 +60,51 @@ class ProfileViewModel @Inject constructor(
                     _perfil.value = UserSession.profileCache
                 }
                 isLoading = false
-            }else{
+            } else {
                 _uiState = UserSession.profileCache
             }
         }
     }
+
+    fun retornaMenstrucao(
+        searchData: SearchData,
+        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch {
+            isLoading = true
+
+            val currentUser = _uiState?.user
+            val currentPregnancy = _uiState?.pregnancyMonitoring
+
+            val profileRequest = ProfileRequest(
+                name = currentUser?.name,
+                surname = currentUser?.surname,
+                email = currentUser?.email,
+                modo = "MENSTRUACAO",
+                search = SearchData(
+                    age = searchData.age,
+                    useContraceptive = searchData.useContraceptive,
+                    contraceptiveType = searchData.contraceptiveType
+                ),
+                pregnancyMonitoring = PregnancyData(
+                    isPregnant = false,
+                    startDate = "",
+                    gestationWeeks = 0,
+                    expectedBirthDate = ""
+                )
+            )
+            val result = repository.updatePerfil(profileRequest)
+            result.onSuccess { response ->
+                UserSession.profileCache = null
+                loadUserProfile(forceRefresh = true)
+                onSuccess()
+            }.onFailure { error ->
+                _errorMessage.value = error.message
+            }
+            isLoading = false
+        }
+    }
+
 
     fun updateUserProfile(userRegistre : ProfileRequest, onSuccess: () ->Unit) {
         viewModelScope.launch {

@@ -114,7 +114,7 @@ fun QuizPregnantScreen (
                 })
             }
             TipoPergunta.DATA -> {
-                CampoData(onDataConfirmada = { data ->
+                CampoData(value = "", onDataConfirmada = { data ->
                     viewModel.atualizarDadosQuiz(perguntaAtual.campo, data)
                     proximaPergunta(lista = perguntas,
                         atual = indiceAtual,
@@ -124,7 +124,7 @@ fun QuizPregnantScreen (
                             viewModel.onQuizFinish() // Chama o salvamento
                             onQuizComplete()         // Chama a navegação (agora sem erro!)
                         })
-                })
+                }, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp))
             }
             TipoPergunta.BOTAO -> {
                 BotoesOpcao(opcoes = perguntaAtual.opcoes, onSelecionado = { valor ->

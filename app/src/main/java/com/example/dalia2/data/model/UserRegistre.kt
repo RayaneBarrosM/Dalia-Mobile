@@ -98,6 +98,6 @@ data class Weeks(
 data class EventCalendar(
     val titulo: String,
     val descricao: String,
-    val data: String,
+    val dataHora: String,
     val local:String
 )

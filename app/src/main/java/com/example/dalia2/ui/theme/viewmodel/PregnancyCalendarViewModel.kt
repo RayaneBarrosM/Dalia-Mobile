@@ -79,15 +79,15 @@ class PregnancyCalendarViewModel @Inject constructor(
         }
     }
 
-    fun criarEvento(titulo: String, descricao: String, data: String, hora: String, local: String ){
+    fun criarEvento(titulo: String, descricao: String, data: String, hora: String, local: String){
         viewModelScope.launch {
             isLoading = true
-            Log.d("data: " + data, "hora: " + hora)
-
+            val dataHoraIso = "${data}T${hora}:00"
+            Log.d("TESTE", "data: " + dataHoraIso)
             val novoEvento = EventCalendar(
                 titulo = titulo,
                 descricao = descricao,
-                data = data,
+                dataHora = dataHoraIso,
                 local = local
             )
             try{

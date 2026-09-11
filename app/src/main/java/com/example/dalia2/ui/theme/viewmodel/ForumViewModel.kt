@@ -64,7 +64,7 @@ class ForumViewModel  @Inject constructor(
                 createdAt = timestamp,
                 comments = emptyList()
             )
-            repository.createPost(novoPost).onSuccess { it
+            repository.createPost(novoPost).onSuccess {
                 carregarPosts()
                 onSucess()
             }.onFailure {

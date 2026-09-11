@@ -17,17 +17,6 @@ data class ProfileResponse(
         }
 }
 
-data class RetornoMenstruacaoRequest(
-    val modo: String = "MENSTRUACAO",
-    val search: SearchRequest,
-    val pregnancyMonitoring: PregnancyData = PregnancyData(
-        isPregnant = false,
-        startDate = "",
-        gestationWeeks = 0,
-        expectedBirthDate = ""
-    )
-)
-
 data class UserRequest(
     val name: String?,
     val surname: String?,

@@ -46,19 +46,15 @@ import com.example.dalia2.ui.components.Destination
 import com.example.dalia2.ui.theme.Black
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.util.lerp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.dalia2.data.model.Articles
 import com.example.dalia2.ui.theme.BlueButton
 import com.example.dalia2.ui.theme.White
 import com.example.dalia2.ui.theme.viewmodel.CalendarViewModel
 import com.example.dalia2.ui.theme.viewmodel.ForumViewModel
-import com.example.dalia2.ui.theme.Black
 import java.time.LocalDate
-import kotlin.math.absoluteValue
+import kotlin.collections.filter
 
 data class MeuItem(
     val id: Int,
@@ -96,13 +92,13 @@ fun HomeScreen(
     val ontem = hoje.minusDays(1)
     val amanha = hoje.plusDays(1)
 
-   val itensCarrossel = remember {
-       listOf(
-           MeuItem(1, "Ontem", ontem.toString(), destination = "calendar"),
-           MeuItem(2, "Hoje", hoje.toString(), destination = "register"),
-           MeuItem(3, "Amanhã", amanha.toString())
-       )
-   }
+    val itensCarrossel = remember {
+        listOf(
+            MeuItem(1, "Ontem", ontem.toString(), destination = "calendar"),
+            MeuItem(2, "Hoje", hoje.toString(), destination = "register"),
+            MeuItem(3, "Amanhã", amanha.toString())
+        )
+    }
 
     var selectedDay by remember { mutableStateOf(itensCarrossel[1]) }
     val articlesAPI by viewModelForum.articles.collectAsState()
@@ -165,76 +161,76 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(40.dp))
 
-            Text(
-                text = "Notícias sobre saúde",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.align(Alignment.Start)
-            )
+        Text(
+            text = "Notícias sobre saúde",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.align(Alignment.Start)
+        )
 
-            Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-            // Carrossel de notícias de saúde AQUI!!!!                 !
-            NewsCarousel(
-                articlesList = articlesAPI.filter { it.category?.equals("saude", ignoreCase = true) ==true },
-                cardColor = Purple,
-                categoriaLabel = "saude"
-            )
+        // Carrossel de notícias de saúde AQUI!!!!                 !
+        NewsCarousel(
+            articlesList = articlesAPI.filter { it.category?.equals("saude", ignoreCase = true) ==true },
+            cardColor = Purple,
+            categoriaLabel = "saude"
+        )
 
-            Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-            //Banner
-            Banner()
+        //Banner
+        Banner()
 
-            Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-            // Título: Notícias sobre legislação
-            Text(
-                text = "Notícias sobre legislação",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.align(Alignment.Start)
-            )
+        // Título: Notícias sobre legislação
+        Text(
+            text = "Notícias sobre legislação",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.align(Alignment.Start)
+        )
 
-            Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-            // Carrossel de notícias de legislação AQUI!!!!                         !!
-            NewsCarousel(
-                articlesList = articlesAPI.filter { it.category?.equals("lesgilacao", ignoreCase = true) ==true },
-                cardColor = LightPink,
-                categoriaLabel = "legislacao"
-            )
+        // Carrossel de notícias de legislação AQUI!!!!                         !!
+        NewsCarousel(
+            articlesList = articlesAPI.filter { it.category?.equals("lesgilacao", ignoreCase = true) ==true },
+            cardColor = LightPink,
+            categoriaLabel = "legislacao"
+        )
 
-            Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-            Text(
-                text = "Médicos disponíveis",
-                modifier = Modifier.padding(horizontal = 16.dp),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Black
-            )
-            Text(
-                text = "Agende uma consulta com nossos especialistas",
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                fontSize = 12.sp,
-                color = Color(0xFF888888)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-/*
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp)
-            ) {
-                items(medicosDisponiveis) { medico ->
-                    DoctorCardHorizontal(medico = medico)
-                }
-            }*/
+        Text(
+            text = "Médicos disponíveis",
+            modifier = Modifier.padding(horizontal = 16.dp),
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = Black
+        )
+        Text(
+            text = "Agende uma consulta com nossos especialistas",
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            fontSize = 12.sp,
+            color = Color(0xFF888888)
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        /*
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp)
+                    ) {
+                        items(medicosDisponiveis) { medico ->
+                            DoctorCardHorizontal(medico = medico)
+                        }
+                    }*/
 
-            Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 
@@ -268,12 +264,12 @@ fun DayCarousel(
         // LOGICA DE CORES LIGADA AO CALENDÁRIO
         val corDeFundo = if (status == "MENSTRUAÇÃO") {
             Color(0xFFFF7979)
-            } else if (status == "OVULAÇÃO") {
+        } else if (status == "OVULAÇÃO") {
             Color(0xFF30ACFF)
-            }  else if (status == "PERIODO FERTIL") {
+        }  else if (status == "PERIODO FERTIL") {
             Color(0xFF93FFEE)
-             }else {
-                if (isSelected) Color(0xFFFFF5E6) else Color.White
+        }else {
+            if (isSelected) Color(0xFFFFF5E6) else Color.White
         }
 
         Surface(

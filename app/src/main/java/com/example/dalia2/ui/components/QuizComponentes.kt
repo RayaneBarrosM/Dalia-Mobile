@@ -2,6 +2,7 @@ package com.example.dalia2.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,13 +19,17 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -33,11 +38,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.example.dalia2.ui.theme.GrayButton
 import com.example.dalia2.ui.theme.PinkButton
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 enum class TipoPergunta { BOTAO, DATA, NUMERO, MULTIPLAESCOLHA }
 
@@ -74,22 +81,30 @@ fun BotoesOpcao(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CampoData(
-    onDataConfirmada: (String) -> Unit
+    value: String,
+    onDataConfirmada: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     var showDatePicker by remember { androidx.compose.runtime.mutableStateOf(false) }
     val datePickerState = androidx.compose.material3.rememberDatePickerState()
 
-    Column(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally // Espaçamento entre os botões
-    ) {
-        OutlinedButton(onClick = { showDatePicker = true }) {
-            Icon(Icons.Default.CalendarToday, contentDescription = null)
-            Spacer(Modifier.width(8.dp))
-            Text(text = datePickerState.selectedDateMillis?.let {
-                formatarData(it)
-            } ?: "Selecionar data")
-        }
+    OutlinedTextField(
+        value = value,
+        onValueChange = onDataConfirmada,
+        label = { Text("Data") },
+        placeholder = { Text("dd/mm/aaaa") },
+        singleLine = true,
+        modifier = modifier,
+        trailingIcon = {
+            IconButton(onClick = { showDatePicker = true }) {
+                Icon(
+                    imageVector = Icons.Default.CalendarToday,
+                    contentDescription = "Selecionar data",
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+        )
 
         if (showDatePicker) {
             DatePickerDialog(
@@ -102,11 +117,11 @@ fun CampoData(
                     }) { Text("Confirmar") }
                 }
             ) {
-                DatePicker(state = datePickerState)
-            }
+            DatePicker(state = datePickerState)
         }
     }
 }
+
 
 @Composable
 fun CampoNumero(
@@ -162,59 +177,127 @@ fun CampoNumero(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BotoesMultiplaEscolha(
-    opcoes: List<Pair<String, Any>>,
-    onConfirmado: (List<Any>) -> Unit
+fun CampoHora(
+    value: String,
+    onHoraConfirmada: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    // Guarda a lista de valores selecionados
-    val selecionados = remember { mutableStateListOf<Any>() }
+    var showTimePicker by remember { mutableStateOf(false) }
+    val timePickerState = rememberTimePickerState(is24Hour = true)
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        opcoes.forEach { (texto, valor) ->
-            val estaSelecionado = selecionados.contains(valor)
-
-            Button(
-                onClick = {
-                    if (estaSelecionado) {
-                        selecionados.remove(valor)
-                    } else {
-                        selecionados.add(valor)
-                    }
-                },
-                modifier = Modifier.size(width = 304.dp, height = 44.dp),
-                colors = ButtonDefaults.buttonColors(
-                    // Altera a cor se o botão estiver marcado
-                    containerColor = if (estaSelecionado) PinkButton else GrayButton,
-                    contentColor = if (estaSelecionado) Color.White else Color.Black
-                ),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Text(text = texto, fontSize = 16.sp)
+    OutlinedTextField(
+        value = value,
+        onValueChange = onHoraConfirmada,
+        label = { Text("Hora") },
+        placeholder = { Text("14:30") },
+        singleLine = true,
+        modifier = modifier,
+        trailingIcon = {
+            IconButton(onClick = { showTimePicker = true }) {
+                Icon(
+                    imageVector = Icons.Default.CalendarToday,
+                    contentDescription = "Selecionar hora",
+                    modifier = Modifier.size(20.dp)
+                )
             }
         }
+    )
 
-        Spacer(modifier = Modifier.height(20.dp))
+    if (showTimePicker) {
+        Dialog(
+            onDismissRequest = { showTimePicker = false }) {
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = Color.White,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    TimePicker(state = timePickerState)
 
-        // Botão de envio da lista final
-        Button(
-            onClick = { onConfirmado(selecionados.toList()) },
-            enabled = selecionados.isNotEmpty(), // Só habilita se marcar ao menos um
-            colors = ButtonDefaults.buttonColors(containerColor = PinkButton),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-            Text("Confirmar Seleção", color = Color.White, fontSize = 16.sp)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(onClick = { showTimePicker = false }) {
+                            Text("Cancelar")
+                        }
+                        TextButton(onClick = {
+                            val horarioFormatado = String.format(
+                                Locale.getDefault(),
+                                "%02d:%02d",
+                                timePickerState.hour,
+                                timePickerState.minute
+                            )
+                            showTimePicker = false
+                            onHoraConfirmada(horarioFormatado)
+                        }) {
+                            Text("Confirmar")
+                        }
+                    }
+                }
+            }
         }
     }
 }
+
+    @Composable
+    fun BotoesMultiplaEscolha(
+        opcoes: List<Pair<String, Any>>,
+        onConfirmado: (List<Any>) -> Unit
+    ) {
+        // Guarda a lista de valores selecionados
+        val selecionados = remember { mutableStateListOf<Any>() }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            opcoes.forEach { (texto, valor) ->
+                val estaSelecionado = selecionados.contains(valor)
+
+                Button(
+                    onClick = {
+                        if (estaSelecionado) {
+                            selecionados.remove(valor)
+                        } else {
+                            selecionados.add(valor)
+                        }
+                    },
+                    modifier = Modifier.size(width = 304.dp, height = 44.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        // Altera a cor se o botão estiver marcado
+                        containerColor = if (estaSelecionado) PinkButton else GrayButton,
+                        contentColor = if (estaSelecionado) Color.White else Color.Black
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(text = texto, fontSize = 16.sp)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Botão de envio da lista final
+            Button(
+                onClick = { onConfirmado(selecionados.toList()) },
+                enabled = selecionados.isNotEmpty(), // Só habilita se marcar ao menos um
+                colors = ButtonDefaults.buttonColors(containerColor = PinkButton),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            ) {
+                Text("Confirmar Seleção", color = Color.White, fontSize = 16.sp)
+            }
+        }
+    }
 
 fun formatarData(millis: Long?): String {
     if (millis == null) return ""

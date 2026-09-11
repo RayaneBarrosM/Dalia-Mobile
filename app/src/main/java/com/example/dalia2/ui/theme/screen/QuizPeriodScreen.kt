@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -119,17 +120,22 @@ fun QuizPeriodScreen(
                 })
             }
             TipoPergunta.DATA -> {
-                CampoData(onDataConfirmada = { data ->
-                    viewModel.atualizarDadosQuiz(perguntaAtual.campo, data)
-                    proximaPergunta(lista = perguntas,
-                        atual = indiceAtual,
-                        valorSelecionado = data,
-                        atualizarIndice = { indiceAtual = it },
-                        finalizou = {
-                            viewModel.onQuizFinish() // Chama o salvamento
-                            onQuizComplete()         // Chama a navegação (agora sem erro!)
-                        })
-                })
+                var dataInput by remember {mutableStateOf("")}
+                CampoData(value = dataInput,onDataConfirmada = { data ->
+                    dataInput = data
+                    if(data.length == 10) {
+                        viewModel.atualizarDadosQuiz(perguntaAtual.campo, data)
+                        proximaPergunta(
+                            lista = perguntas,
+                            atual = indiceAtual,
+                            valorSelecionado = data,
+                            atualizarIndice = { indiceAtual = it },
+                            finalizou = {
+                                viewModel.onQuizFinish() // Chama o salvamento
+                                onQuizComplete()         // Chama a navegação (agora sem erro!)
+                            })
+                    }
+                }, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp))
             }
             TipoPergunta.BOTAO -> {
                 BotoesOpcao(opcoes = perguntaAtual.opcoes, onSelecionado = { valor ->

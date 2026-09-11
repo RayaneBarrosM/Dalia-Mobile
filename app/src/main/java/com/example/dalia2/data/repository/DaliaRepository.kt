@@ -24,7 +24,6 @@ import com.example.dalia2.data.model.Weeks
 import com.example.dalia2.data.session.UserSession
 import com.example.dalia2.network.ApiService
 import okhttp3.RequestBody
-import java.time.LocalDate
 import javax.inject.Inject
 
 class DaliaRepository @Inject constructor(

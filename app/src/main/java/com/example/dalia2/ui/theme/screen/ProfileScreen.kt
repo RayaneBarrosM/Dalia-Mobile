@@ -71,9 +71,9 @@ fun ProfileScreen(
 
     val nomeCompleto = "${state?.user?.name ?: ""} ${state?.user?.surname ?: ""}".trim()
     val telefoneUsuario =
-        state?.user?.email ?: "Não informado" // Adapte para state?.user?.telefone se houver
+        state?.user?.email ?: "Não informado"
 
-    val currentMode = state?.currentMode ?: AppMode.MENSTRUACAO //[cite: 3, 4]
+    val currentMode = state?.currentMode ?: AppMode.MENSTRUACAO
     val isModoGravidez = currentMode == AppMode.GRAVIDEZ
     var showModeDialog by remember { mutableStateOf(false) }
     var showReportDialog by remember { mutableStateOf(false) }

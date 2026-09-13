@@ -62,10 +62,15 @@ interface ApiService {
     suspend fun getCycle(
     ): Response<CycleData>
 
+    //EVENTOS CALENDARIO
     @POST("/api/pregnancy/event")
     suspend fun createEvent(
         @Body request: EventCalendar
     ): Response<EventCalendar>
+
+    @GET("/api/pregnancy/event")
+    suspend fun getEvents(
+    ): Response<List<EventCalendar>>
 
     //GRAVIDEZ
     @Headers("Content-Type: application/json",

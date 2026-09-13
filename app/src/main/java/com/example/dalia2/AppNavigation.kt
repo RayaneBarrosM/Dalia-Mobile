@@ -50,7 +50,7 @@ fun AppNavigation() {
     val currentMode by viewmodelProfile.currentMode.collectAsState()
 
     // Lista de rotas onde a barra deve aparecer
-    val bottomBarRoutes = listOf("home", "homePregnant","calendar", "calendarPregnant", "bot", "forum", "settings")
+    val bottomBarRoutes = listOf("home", "homePregnant","calendar", "bot", "forum", "settings")
 
     Scaffold(
         bottomBar = {
@@ -150,6 +150,7 @@ fun AppNavigation() {
             HomeScreen(
                 viewModel = viewmodelCalendar,
                 viewModelForum = viewModelForum,
+                viewModelProfile = viewmodelProfile,
                 onNavigateToRegister = {
                     navController.navigate("register")
                 },
@@ -166,7 +167,7 @@ fun AppNavigation() {
                     navController.navigate("register")
                 },
                 onNavigateToCalendar = {
-                    navController.navigate("calendarPregnant")
+                    navController.navigate("calendar")
                 },
                 onNavigateToArticle = {
                     navController.navigate("articleScreen")
@@ -182,12 +183,12 @@ fun AppNavigation() {
             RegisterScreen()
         }
 
-        composable("calendarPregnant"){
-            CalendarPregnantScreen()
-        }
-
         composable ("calendar"){
-            CalendarScreen()
+            CalendarScreen(
+                viewModel = viewmodelCalendar,
+                viewModelPregnancy = viewmodelPregnancyCalendar,
+                viewModelProfile = viewmodelProfile
+            )
         }
 
         composable("forum") {

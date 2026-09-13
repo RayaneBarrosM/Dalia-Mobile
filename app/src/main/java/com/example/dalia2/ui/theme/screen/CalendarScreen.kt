@@ -19,6 +19,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
@@ -26,6 +28,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,12 +42,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.dalia2.data.model.AppMode
 import com.example.dalia2.ui.components.CampoData
 import com.example.dalia2.ui.components.CampoHora
 import com.example.dalia2.ui.theme.Dalia2Theme
 import com.example.dalia2.ui.theme.PinkButton
 import com.example.dalia2.ui.theme.viewmodel.CalendarViewModel
 import com.example.dalia2.ui.theme.viewmodel.PregnancyCalendarViewModel
+import com.example.dalia2.ui.theme.viewmodel.ProfileViewModel
 import com.kizitonwose.calendar.compose.VerticalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.CalendarDay
@@ -57,15 +62,18 @@ import kotlin.toString
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarScreen(
-    viewModel: CalendarViewModel = hiltViewModel(),
-    viewModelPregnancy: PregnancyCalendarViewModel = hiltViewModel(),
-    isModoGravidez: Boolean = true,
+    viewModel: CalendarViewModel,
+    viewModelPregnancy: PregnancyCalendarViewModel,
+    viewModelProfile: ProfileViewModel,
     onToCreateEvent: (LocalDate) -> Unit ={},
 ) {
     //para o calendario
     val currentMonth = remember { YearMonth.now() }
     val startMonth = remember { currentMonth.minusMonths(12) } // 1 ano para trás
     val endMonth = remember { currentMonth.plusMonths(12) }   // 1 ano para frente
+    var showBottomSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+    var dateSelected by remember { mutableStateOf<LocalDate?>(null) }
 
     //para o calendario da mentruação
     val menstruacao by viewModel.diasMenstruacao.collectAsState()
@@ -73,11 +81,14 @@ fun CalendarScreen(
     val ovulacao by viewModel.diaOvulacao.collectAsState()
     val hoje = remember{LocalDate.now()}
 
-    //para o calendario da gravidez
-    var showBottomSheet by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState()
-    var dateSelected by remember { mutableStateOf<LocalDate?>(null) }
+
+   //para o calendario da gravidez
     val EventsDay = remember { setOf(LocalDate.now(), LocalDate.now().plusDays(3)) }
+    val stateGravidez = viewModelProfile._uiState
+    val currentMode = stateGravidez?.currentMode ?: AppMode.MENSTRUACAO
+    val isModoGravidez = currentMode == AppMode.GRAVIDEZ
+    val eventosDoCalendario = viewModelPregnancy.eventosAgrupadosPorData
+    val eventosDoDiaSelecionado = dateSelected?.let { eventosDoCalendario[it] } ?: emptyList()
 
     val state = rememberCalendarState(
         startMonth = startMonth,
@@ -95,6 +106,11 @@ fun CalendarScreen(
         showCreateEventModal = true
     }
 
+    LaunchedEffect(Unit) {
+        if(isModoGravidez){
+            viewModelPregnancy.carregarEvents()
+        }
+    }
 // Dentro do seu Scaffold / Box principal:
     if (showCreateEventModal) {
         CreateEventBottomSheet(
@@ -131,7 +147,7 @@ fun CalendarScreen(
                     Day(
                         day = day,
                         isModoGravidez = isModoGravidez,
-                        haveEvent = EventsDay.contains(day.date),
+                        haveEvent = eventosDoCalendario.containsKey(day.date),
                         isMenstruacao = menstruacao.contains(day.date),
                         isOvulacao = ovulacao == day.date,
                         isFertil = fertil.contains(day.date),
@@ -175,6 +191,56 @@ fun CalendarScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    if (eventosDoDiaSelecionado.isEmpty()) {
+                        Text(
+                            text = "Nenhum evento agendado para este dia.",
+                            color = Color.Gray,
+                            fontSize = 14.sp
+                        )
+                    } else {
+                        // Lista de eventos do dia
+                        eventosDoDiaSelecionado.forEach { evento ->
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color(0xFFF6F7F9))
+                            ) {
+                                Column(modifier = Modifier.padding(12.dp)) {
+                                    Text(
+                                        text = evento.titulo,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 16.sp,
+                                        color = Color.Black
+                                    )
+                                    if (evento.local.isNotBlank()) {
+                                        Text(
+                                            text = "Local: ${evento.local}",
+                                            fontSize = 13.sp,
+                                            color = Color.DarkGray
+                                        )
+                                    }
+                                    if (evento.dataHora.length >= 16) {
+                                        Text(
+                                            text = "${evento.dataHora.substring(11, 16)}",
+                                            fontSize = 13.sp,
+                                            color = Color.DarkGray
+                                        )
+                                    }
+                                    if (evento.descricao.isNotBlank()) {
+                                        Text(
+                                            text = evento.descricao,
+                                            fontSize = 12.sp,
+                                            color = Color.Gray,
+                                            modifier = Modifier.padding(top = 4.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
 
                     Button(
                         onClick = {
@@ -338,6 +404,6 @@ fun CreateEventBottomSheet(
 @Composable
 fun CalendarPreview() {
     Dalia2Theme {
-        CalendarScreen()
+        //CalendarScreen
     }
 }

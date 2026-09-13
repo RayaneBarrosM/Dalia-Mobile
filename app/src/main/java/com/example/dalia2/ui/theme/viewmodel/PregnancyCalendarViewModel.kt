@@ -29,16 +29,24 @@ class PregnancyCalendarViewModel @Inject constructor(
         private set
 
     //sobre o bebe
-
     private val _semana = MutableStateFlow<Weeks?>(null)
     val semana = _semana.asStateFlow()
-
     var semanaAtual by mutableStateOf(3)
         private set
 
     //sobre o calendario
-
+    var listaEventos by mutableStateOf<List<EventCalendar>>(emptyList())
+        private set
     var _uiState by mutableStateOf<Weeks?>(null)
+
+    val eventosAgrupadosPorData: Map<LocalDate, List<EventCalendar>>
+        get() = listaEventos.groupBy { evento ->
+            try {
+                LocalDate.parse(evento.dataHora.substring(0, 10))
+            } catch (e: Exception) {
+                LocalDate.MIN
+            }
+        }
 
     fun inciarDados(){
         viewModelScope.launch {
@@ -94,11 +102,33 @@ class PregnancyCalendarViewModel @Inject constructor(
                 val response = repository.createEventCalendar(novoEvento)
                 if(response.isSuccess){
                     eventSucess = true
+                    carregarEvents()
                     errorMessage = response.exceptionOrNull()?.message ?: "Erro desconhecido"
                     Log.d("API_ERROR", "Error na resposta: $errorMessage")
                 }
             } catch (e: Exception) {
                 eventSucess = false
+                errorMessage = "Falha na conexão"
+                Log.d("API_ERROR", e.message.toString())
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun carregarEvents() {
+        viewModelScope.launch {
+            isLoading = true
+            try {
+                val response = repository.getEvents()
+                if (response.isSuccess) {
+                    listaEventos = response.getOrThrow()
+                    Log.d("API_SUCCESS", "Resposta da API: $listaEventos")
+                } else {
+                    errorMessage = response.exceptionOrNull()?.message ?: "Erro desconhecido"
+                    Log.d("API_ERROR", "Error na resposta: $errorMessage")
+                }
+            } catch (e: Exception) {
                 errorMessage = "Falha na conexão"
                 Log.d("API_ERROR", e.message.toString())
             } finally {

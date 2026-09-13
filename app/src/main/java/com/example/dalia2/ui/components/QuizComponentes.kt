@@ -94,6 +94,7 @@ fun CampoData(
         label = { Text("Data") },
         placeholder = { Text("dd/mm/aaaa") },
         singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         modifier = modifier,
         trailingIcon = {
             IconButton(onClick = { showDatePicker = true }) {
@@ -192,6 +193,7 @@ fun CampoHora(
         onValueChange = onHoraConfirmada,
         label = { Text("Hora") },
         placeholder = { Text("14:30") },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
         singleLine = true,
         modifier = modifier,
         trailingIcon = {

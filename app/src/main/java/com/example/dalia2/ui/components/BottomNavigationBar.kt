@@ -79,7 +79,6 @@ private fun getTargetRoute(destination: Destination, currentMode: AppMode): Stri
     val isPregnant = currentMode == AppMode.GRAVIDEZ
     return when (destination) {
         Destination.Home -> if (isPregnant) "homePregnant" else "home"
-        Destination.Calendar -> if (isPregnant) "calendarPregnant" else "calendar"
         else -> destination.route
     }
 }
@@ -87,7 +86,6 @@ private fun getTargetRoute(destination: Destination, currentMode: AppMode): Stri
 private fun isDestinationSelected(destination: Destination, currentRoute: String?): Boolean {
     return when (destination) {
         Destination.Home -> currentRoute == "home" || currentRoute == "homePregnant"
-        Destination.Calendar -> currentRoute == "calendar" || currentRoute == "calendarPregnant"
         else -> currentRoute == destination.route
     }
 }

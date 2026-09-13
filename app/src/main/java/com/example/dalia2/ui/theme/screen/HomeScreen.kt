@@ -48,11 +48,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.dalia2.data.model.AppMode
 import com.example.dalia2.data.model.Articles
 import com.example.dalia2.ui.theme.BlueButton
 import com.example.dalia2.ui.theme.White
 import com.example.dalia2.ui.theme.viewmodel.CalendarViewModel
 import com.example.dalia2.ui.theme.viewmodel.ForumViewModel
+import com.example.dalia2.ui.theme.viewmodel.PregnancyCalendarViewModel
+import com.example.dalia2.ui.theme.viewmodel.ProfileViewModel
 import java.time.LocalDate
 import kotlin.collections.filter
 
@@ -85,6 +88,7 @@ val medicosDisponiveis = remember {
 fun HomeScreen(
     viewModel: CalendarViewModel,
     viewModelForum: ForumViewModel,
+    viewModelProfile: ProfileViewModel,
     onNavigateToRegister: () -> Unit = {},
     onNavigateToCalendar: () -> Unit = {}
 ) {
@@ -103,8 +107,13 @@ fun HomeScreen(
     var selectedDay by remember { mutableStateOf(itensCarrossel[1]) }
     val articlesAPI by viewModelForum.articles.collectAsState()
 
+    val stateGravidez = viewModelProfile._uiState
+    val currentMode = stateGravidez?.currentMode ?: AppMode.MENSTRUACAO
+    val isModoGravidez = currentMode == AppMode.GRAVIDEZ
+
     val scrollState = rememberScrollState()
     LaunchedEffect(Unit) {
+        isModoGravidez
         viewModel.carregarStatusHoje()
         viewModelForum.carregarArticles()
     }
@@ -599,10 +608,12 @@ fun MainNavGraph(
             }
             val sharedViewModel: CalendarViewModel = hiltViewModel(parentEntry)
             val viewModelForum: ForumViewModel = hiltViewModel(parentEntry)
+            val viewmodelProfile: ProfileViewModel = hiltViewModel(parentEntry)
 
             HomeScreen(
                 viewModel = sharedViewModel,
                 viewModelForum = viewModelForum,
+                viewModelProfile = viewmodelProfile,
                 onNavigateToRegister = { navController.navigate("register") },
                 onNavigateToCalendar = { navController.navigate(Destination.Calendar.route) },
             )
@@ -612,12 +623,14 @@ fun MainNavGraph(
                 navController.getBackStackEntry(navController.graph.startDestinationId)
             }
             val sharedViewModel: CalendarViewModel = hiltViewModel(parentEntry)
+            val viewmodelPregnancyCalendar: PregnancyCalendarViewModel = hiltViewModel(parentEntry)
+            val viewmodelProfile: ProfileViewModel = hiltViewModel(parentEntry)
 
-            CalendarScreen(viewModel = sharedViewModel)
-        }
-
-        composable(Destination.Calendar.route) {
-            CalendarScreen()
+            CalendarScreen(
+                viewModel = sharedViewModel,
+                viewModelPregnancy = viewmodelPregnancyCalendar,
+                viewModelProfile = viewmodelProfile
+            )
         }
 
         composable(Destination.Bot.route) {

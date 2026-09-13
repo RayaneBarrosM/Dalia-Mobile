@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dalia2.data.SessionManager
 import com.example.dalia2.data.model.AppMode
 import com.example.dalia2.data.model.PregnancyData
 import com.example.dalia2.data.model.ProfileRequest
@@ -28,7 +29,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val repository: DaliaRepository
+    private val repository: DaliaRepository,
+     val sessionManager: SessionManager
 ) : ViewModel() {
 
     var _uiState by mutableStateOf<ProfileResponse?>(null)
@@ -58,6 +60,9 @@ class ProfileViewModel @Inject constructor(
                     UserSession.profileCache = response.getOrNull()
                     _uiState = UserSession.profileCache
                     _perfil.value = UserSession.profileCache
+                    UserSession.profileCache?.currentMode?.let { mode ->
+                        sessionManager.saveAppMode(mode)
+                    }
                 }
                 isLoading = false
             } else {

@@ -1,8 +1,10 @@
 package com.example.dalia2.data
 
 import android.content.Context
+import android.system.Os.remove
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.example.dalia2.data.model.AppMode
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -19,6 +21,18 @@ class SessionManager @Inject constructor(@ApplicationContext context: Context) {
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
 
+    fun saveAppMode(mode: AppMode) {
+        sharedPreferences.edit().putString("app_mode", mode.name).apply()
+    }
+
+    fun getAppMode(): AppMode {
+        val modeStr = sharedPreferences.getString("app_mode", AppMode.MENSTRUACAO.name)
+        return try {
+            AppMode.valueOf(modeStr ?: AppMode.MENSTRUACAO.name)
+        } catch (e: Exception) {
+            AppMode.MENSTRUACAO
+        }
+    }
     fun saveAccessToken(token: String) {
         sharedPreferences.edit().putString("accessToken", token).apply()
     }
@@ -35,6 +49,7 @@ class SessionManager @Inject constructor(@ApplicationContext context: Context) {
         sharedPreferences.edit()
             .remove("accessToken")
             .remove("refreshToken")
+            .remove("app_mode")
             .apply()
     }
 }

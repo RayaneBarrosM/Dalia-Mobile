@@ -14,6 +14,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.dalia2.data.SessionManager
 import com.example.dalia2.data.model.AppMode
 import com.example.dalia2.ui.components.BottomNavigationBar
 import com.example.dalia2.ui.theme.screen.*
@@ -37,6 +38,7 @@ fun saveFactor(factor: String) {
 fun AppNavigation() {
     val navController = rememberNavController()
 
+    val sessionManager = SessionManager(LocalContext.current)
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -51,6 +53,12 @@ fun AppNavigation() {
 
     // Lista de rotas onde a barra deve aparecer
     val bottomBarRoutes = listOf("home", "homePregnant","calendar", "bot", "forum", "settings")
+
+    val startDestination = if (!sessionManager.getAccessToken().isNullOrBlank()) {
+        "home" // Já logado, pula direto para o fluxo principal
+    } else {
+        "login" // Não logado, abre a tela de login
+    }
 
     Scaffold(
         bottomBar = {

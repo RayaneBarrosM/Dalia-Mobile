@@ -113,7 +113,7 @@ fun HomeScreen(
 
     val scrollState = rememberScrollState()
     LaunchedEffect(Unit) {
-        isModoGravidez
+        viewModelProfile.loadUserProfile()
         viewModel.carregarStatusHoje()
         viewModelForum.carregarArticles()
     }

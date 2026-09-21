@@ -1,5 +1,6 @@
 package com.example.dalia2.ui.theme.screen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -84,9 +85,7 @@ fun CalendarScreen(
 
    //para o calendario da gravidez
     val EventsDay = remember { setOf(LocalDate.now(), LocalDate.now().plusDays(3)) }
-    val stateGravidez = viewModelProfile._uiState
-    val currentMode = stateGravidez?.currentMode ?: AppMode.MENSTRUACAO
-    val isModoGravidez = currentMode == AppMode.GRAVIDEZ
+    val isModoGravidez = viewModelPregnancy.isModoGravidez
     val eventosDoCalendario = viewModelPregnancy.eventosAgrupadosPorData
     val eventosDoDiaSelecionado = dateSelected?.let { eventosDoCalendario[it] } ?: emptyList()
 
@@ -107,7 +106,9 @@ fun CalendarScreen(
     }
 
     LaunchedEffect(Unit) {
-        if(isModoGravidez){
+        viewModelPregnancy.atualizarModo()
+        if(viewModelPregnancy.isModoGravidez){
+            Log.d("Calendario", "o modo gravidez: " + viewModelPregnancy.isModoGravidez)
             viewModelPregnancy.carregarEvents()
         }
     }
@@ -131,7 +132,7 @@ fun CalendarScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 20.dp)
-                            .padding(bottom = 120.dp),
+                            .padding(bottom = 5.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = PinkButton),
                         elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
                     ) {

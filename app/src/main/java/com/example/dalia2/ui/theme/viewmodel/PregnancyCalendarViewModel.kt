@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dalia2.data.SessionManager
+import com.example.dalia2.data.model.AppMode
 import com.example.dalia2.data.model.EventCalendar
 import com.example.dalia2.data.model.Posts
 import com.example.dalia2.data.model.Weeks
@@ -22,10 +24,14 @@ import kotlin.math.log
 @HiltViewModel
 class PregnancyCalendarViewModel @Inject constructor(
     private val repository: DaliaRepository,
+    private val sessionManager: SessionManager
 ): ViewModel() {
     var eventSucess by mutableStateOf(false)
     var isLoading by mutableStateOf(false)
     var errorMessage by mutableStateOf<String?>(null)
+        private set
+
+    var isModoGravidez by mutableStateOf(sessionManager.getAppMode() == AppMode.GRAVIDEZ)
         private set
 
     //sobre o bebe
@@ -47,6 +53,10 @@ class PregnancyCalendarViewModel @Inject constructor(
                 LocalDate.MIN
             }
         }
+
+    fun atualizarModo() {
+        isModoGravidez = sessionManager.getAppMode() == AppMode.GRAVIDEZ
+    }
 
     fun inciarDados(){
         viewModelScope.launch {

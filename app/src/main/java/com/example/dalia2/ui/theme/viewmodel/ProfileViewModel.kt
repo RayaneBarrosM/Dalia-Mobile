@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.dalia2.data.SessionManager
 import com.example.dalia2.data.model.AppMode
 import com.example.dalia2.data.model.PregnancyData
@@ -57,10 +58,9 @@ class ProfileViewModel @Inject constructor(
                 isLoading = true
                 val response = repository.getUserFullProfile()
                 if (response.isSuccess) {
-                    UserSession.profileCache = response.getOrNull()
-                    _uiState = UserSession.profileCache
-                    _perfil.value = UserSession.profileCache
-                    UserSession.profileCache?.currentMode?.let { mode ->
+                    val userProfile = response.getOrThrow()
+                    _uiState = userProfile
+                    userProfile.currentMode?.let { mode ->
                         sessionManager.saveAppMode(mode)
                     }
                 }
@@ -122,6 +122,14 @@ class ProfileViewModel @Inject constructor(
                 _errorMessage.value = error.message
             }
             isLoading = false
+        }
+    }
+
+    fun logout(onLogoutSuccess: () -> Unit){
+        viewModelScope.launch {
+           sessionManager.clearSession()
+            _uiState = null
+            onLogoutSuccess()
         }
     }
 

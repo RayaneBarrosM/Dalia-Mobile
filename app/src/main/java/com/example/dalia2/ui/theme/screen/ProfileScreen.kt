@@ -60,7 +60,8 @@ fun ProfileScreen(
     onInformationClick: () -> Unit = {},
     onHelpClick: () -> Unit = {},
     onChangeModeClick: () -> Unit = {},
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onLogoutClick: () -> Unit = {}
 ) {
 
     val state = viewModel._uiState
@@ -329,7 +330,11 @@ fun ProfileScreen(
                     )
 
                     Button(
-                        onClick = { /* Excluir conta */ },
+                        onClick = {
+                            viewModel.logout {
+                                onLogoutClick()
+                            }
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(containerColor = PinkButton)
                     ) {

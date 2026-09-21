@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dalia2.data.SessionManager
+import com.example.dalia2.data.model.AppMode
 import com.example.dalia2.data.model.CycleData
 import com.example.dalia2.data.repository.DaliaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

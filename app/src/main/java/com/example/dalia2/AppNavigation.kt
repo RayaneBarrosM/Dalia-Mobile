@@ -3,12 +3,14 @@ package com.example.dalia2
 import CreatePostScreen
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.navigation.compose.NavHost
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.composable
@@ -25,39 +27,35 @@ import com.example.dalia2.ui.theme.viewmodel.PregnancyQuizViewModel
 import com.example.dalia2.ui.theme.viewmodel.ProfileViewModel
 import com.example.dalia2.ui.theme.viewmodel.QuizViewModel
 
-// implementar viewModel para o salvamento no banco de dados
-fun saveData(month: Int, weeks: Int) {
-    println(" Dados salvos - Mês: $month, Semanas: $weeks")
-
-}
-fun saveFactor(factor: String) {
-  println("Fator escolhido: $factor")
-}
-
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-
-    val sessionManager = SessionManager(LocalContext.current)
+    val context = LocalContext.current
+    val sessionManager = remember { SessionManager(context) }
+    
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val viewmodelPregnancyCalendar: PregnancyCalendarViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
-    val viewmodelProfile: ProfileViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
-    val viewmodelQuiz: QuizViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
-    val viewmodelCalendar: CalendarViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
-    val viewModelForum: ForumViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
-    val viewModelPregnancyQuiz: PregnancyQuizViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
+    val viewmodelPregnancyCalendar: PregnancyCalendarViewModel = hiltViewModel(context as ComponentActivity)
+    val viewmodelProfile: ProfileViewModel = hiltViewModel(context as ComponentActivity)
+    val viewmodelQuiz: QuizViewModel = hiltViewModel(context as ComponentActivity)
+    val viewmodelCalendar: CalendarViewModel = hiltViewModel(context as ComponentActivity)
+    val viewModelForum: ForumViewModel = hiltViewModel(context as ComponentActivity)
+    val viewModelPregnancyQuiz: PregnancyQuizViewModel = hiltViewModel(context as ComponentActivity)
 
     val currentMode by viewmodelProfile.currentMode.collectAsState()
+
+    // Função auxiliar para determinar a rota de Home correta dinamicamente
+    val homeRoute = if (currentMode == AppMode.GRAVIDEZ) "homePregnant" else "home"
 
     // Lista de rotas onde a barra deve aparecer
     val bottomBarRoutes = listOf("home", "homePregnant","calendar", "bot", "forum", "settings")
 
     val startDestination = if (!sessionManager.getAccessToken().isNullOrBlank()) {
-        "home" // Já logado, pula direto para o fluxo principal
+        val mode = sessionManager.getAppMode()
+        if (mode == AppMode.GRAVIDEZ) "homePregnant" else "home"
     } else {
-        "login" // Não logado, abre a tela de login
+        "welcomeScreen"
     }
 
     Scaffold(
@@ -72,7 +70,9 @@ fun AppNavigation() {
     ) { padding ->
     NavHost(
         navController = navController,
-        startDestination = "welcomeScreen" // pagina inícial
+        //startDestination = "welcomeScreen",
+        modifier = Modifier.padding(padding),
+        startDestination = startDestination // pagina inícial
 
     ) {
 
@@ -90,7 +90,11 @@ fun AppNavigation() {
         composable("login") {
             LoginScreen(
                 onLoginSuccess = {
-                    navController.navigate("home")
+                    val mode = sessionManager.getAppMode()
+                    val target = if (mode == AppMode.GRAVIDEZ) "homePregnant" else "home"
+                    navController.navigate(target) {
+                        popUpTo("login") { inclusive = true }
+                    }
                 },
                 onSignUpClick = {
                     navController.navigate("signup")
@@ -108,8 +112,7 @@ fun AppNavigation() {
                 }
             )
         }
-
-        //passa o email pela "url"
+         //passa o email pela "url"
         composable("verification/{email}") { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
             VerificationScreen(
@@ -149,8 +152,7 @@ fun AppNavigation() {
                     viewmodelProfile.loadUserProfile(forceRefresh = true)
                     navController.navigate("homePregnant") {
                         popUpTo("quizPregnant"){inclusive = true}
-                    }
-                }
+                    }                }
             )
         }
 
@@ -255,8 +257,7 @@ fun AppNavigation() {
                 onBackClick = { navController.popBackStack() }
             )
         }
-
-        composable("settings") {
+         composable("settings") {
             ProfileScreen(
                 viewModel = viewmodelProfile,
                 onEditarClick = {
@@ -272,8 +273,14 @@ fun AppNavigation() {
                     navController.navigate("quizPregnant")
                 },
                 onBackClick = {
-                    navController.navigate("home") {
-                       popUpTo("home") { inclusive = true }
+                    navController.navigate(homeRoute) {
+                        popUpTo(homeRoute) { inclusive = true }
+                    }
+                },
+                onLogoutClick = {
+                    navController.navigate("login") {
+                        popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
                     }
                 }
             )
@@ -282,9 +289,9 @@ fun AppNavigation() {
             val articleId = backStackEntry.arguments?.getString("articleId") ?: ""
             ArticleScreen(
                 articleItem = TODO(),
-                onBackClick = TODO(),
-                onBookmarkClick = TODO(),
-                onShareClick = TODO()
+                onBackClick = { navController.popBackStack() },
+                onBookmarkClick = { },
+                onShareClick = { }
             )
         } //Muda a tela pela id do card
 

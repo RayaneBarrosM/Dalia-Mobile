@@ -148,4 +148,13 @@ class ProfileViewModel @Inject constructor(
             isLoading = false
         }
     }
+
+    fun resetState() {
+        _uiState = null
+        _errorMessage.value = null
+        _perfil.value = null
+        isLoading = false
+        UserSession.profileCache = null
+        sessionManager.clearSession()
+    }
 }

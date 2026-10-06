@@ -2,6 +2,7 @@ package com.example.dalia2.network
 
 import com.example.dalia2.data.model.*
 import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
@@ -34,6 +35,21 @@ interface ApiService {
         @Body request: LoginRequest
     ): Response<TokensResponse>
 
+    @POST("/api/user/forgetPassword")
+    suspend fun forgetPass(
+        @Body request: ForgetPassword
+    ): Response<ResponseBody>
+
+    @POST("/api/user/verifyToken")
+    suspend fun verifyToken(
+        @Body request: VerificationRequest
+    ): Response<TokensResponse>
+
+    @POST("/api/user/resetPassword")
+    suspend fun changePass(
+        @Body request: ChangePassword
+    ): Response<String>
+
     @POST("/api/user/refresh")
     fun refreshToken(
         @Header("Authorization") token: String,
@@ -61,6 +77,12 @@ interface ApiService {
     @GET("/api/ciclo/status")
     suspend fun getCycle(
     ): Response<CycleData>
+
+    //REGISTRO DIARIO
+    @POST("/api/ciclo/dailyRecord")
+    suspend fun createDailyRecord(
+        @Body request: DailyRecordRequest
+    ): Response<DailyRecordResponse>
 
     //EVENTOS CALENDARIO
     @POST("/api/pregnancy/event")

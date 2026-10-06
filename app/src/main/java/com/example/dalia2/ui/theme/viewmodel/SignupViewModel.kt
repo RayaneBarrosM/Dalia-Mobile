@@ -78,4 +78,8 @@ class SignupViewModel @Inject constructor(
             }
         }
     }
+    fun resetState() {
+        sigupSucess = false
+        errorMessage = null
+    }
 }

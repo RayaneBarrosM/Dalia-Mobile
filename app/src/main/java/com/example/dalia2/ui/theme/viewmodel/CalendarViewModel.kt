@@ -6,13 +6,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.dalia2.data.SessionManager
-import com.example.dalia2.data.model.AppMode
 import com.example.dalia2.data.model.CycleData
+import com.example.dalia2.data.model.DailyRecordRequest
 import com.example.dalia2.data.repository.DaliaRepository
+import com.example.dalia2.data.session.UserSession
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
@@ -23,27 +24,51 @@ class CalendarViewModel @Inject constructor(
 ) : ViewModel() {
     var registroSucesso by mutableStateOf(false)
         private set
+    var recordSucess by mutableStateOf(false)
+        private set
     var isLoading by mutableStateOf<Boolean?>(false)
     var errorMessage by mutableStateOf<String?>(null)
         private set
     var cycleData by mutableStateOf<CycleData?>(null)
         private set
 
+    private val _recordState = MutableStateFlow(DailyRecordRequest(ArrayList(), ArrayList(), ArrayList(), ArrayList(), ArrayList(), ArrayList()))
     private var diasOvulacaoAcumulados = listOf<LocalDate>()
-
-
     private val _diasMenstruacao = MutableStateFlow<List<LocalDate>>(emptyList())
     val diasMenstruacao = _diasMenstruacao.asStateFlow()
-
     private val _diasFertil = MutableStateFlow<List<LocalDate>>(emptyList())
     val diasFertil = _diasFertil.asStateFlow()
-
     private val _diaOvulacao = MutableStateFlow<LocalDate?>(null)
     val diaOvulacao = _diaOvulacao.asStateFlow()
 
 
+
     init{
         carregarStatusHoje()
+    }
+
+    fun updateHabitos(habits: List<String>) {
+        _recordState.update { it.copy(habits = habits) }
+    }
+
+    fun updateHumor(mood: List<String>) {
+        _recordState.update { it.copy(mood = mood) }
+    }
+
+    fun updateAtividadeFisica(physical_activity: List<String>) {
+        _recordState.update { it.copy(physical_activity = physical_activity) }
+    }
+
+    fun updateSintomas(symptoms: List<String>) {
+        _recordState.update { it.copy(symptoms = symptoms) }
+    }
+
+    fun updateSexo(sex: List<String>) {
+        _recordState.update { it.copy(sex = sex) }
+    }
+
+    fun updateSecrecao(discharge: List<String>) {
+        _recordState.update { it.copy(discharge = discharge) }
     }
 
     fun carregarStatusHoje() {
@@ -147,5 +172,40 @@ class CalendarViewModel @Inject constructor(
             atual = atual.plusDays(1)
         }
         return datas
+    }
+
+    fun atualizarDadosRecord(campo: String, valor: Any) {
+        when (campo) {
+            "humor" -> updateHumor(valor as List<String>)
+            "habitos" -> updateHabitos(valor as List<String>)
+            "sintomas" -> updateSintomas(valor as List<String>)
+            "atividade fisica" -> updateAtividadeFisica(valor as List<String>)
+            "sexo" -> updateSexo(valor as List<String>)
+            "secrecao" -> updateSecrecao(valor as List<String>)
+        }
+    }
+
+    fun createDailyRecord(onSuccess: () -> Unit = {}){
+        errorMessage = null
+        isLoading = true
+        viewModelScope.launch {
+            try{
+                val request =_recordState.value
+                val response = repository.createRecord(request)
+
+                if(response.isSuccess){
+                    recordSucess = true
+                    onSuccess()
+                }else{
+                    registroSucesso = false
+                    errorMessage = response.exceptionOrNull()?.message
+                }
+            }catch(e: Exception){
+                Log.d("API_ERROR", e.message.toString())
+                errorMessage = "Falha ao salvar pesquisa"
+            }finally {
+                isLoading = false
+            }
+        }
     }
 }

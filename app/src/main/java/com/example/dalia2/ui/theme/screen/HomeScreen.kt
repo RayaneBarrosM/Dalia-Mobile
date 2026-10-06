@@ -207,7 +207,7 @@ fun HomeScreen(
 
         // Carrossel de notícias de legislação AQUI!!!!                         !!
         NewsCarousel(
-            articlesList = articlesAPI.filter { it.category?.equals("lesgilacao", ignoreCase = true) ==true },
+            articlesList = articlesAPI.filter { it.category?.equals("legislacao", ignoreCase = true) ==true },
             cardColor = LightPink,
             categoriaLabel = "legislacao"
         )
@@ -654,9 +654,13 @@ fun MainNavGraph(
             )
         }
 
-        composable("register") {
+        composable("register") { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(navController.graph.startDestinationId)
+            }
+            val sharedViewModel: CalendarViewModel = hiltViewModel(parentEntry)
             RegisterScreen(
-
+                viewModel = sharedViewModel
             )
         }
     }

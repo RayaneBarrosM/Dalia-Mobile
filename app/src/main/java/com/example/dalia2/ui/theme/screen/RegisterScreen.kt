@@ -2,18 +2,25 @@ package com.example.dalia2.ui.theme.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.foundation.Image
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -25,13 +32,32 @@ import androidx.compose.ui.unit.sp
 import com.example.dalia2.R
 import com.example.dalia2.ui.theme.Dalia2Theme
 import com.example.dalia2.ui.theme.PinkButton
+import com.example.dalia2.ui.theme.viewmodel.CalendarViewModel
 
 @Composable
 fun RegisterScreen(
-    onNextClick: () -> Unit = {}
+    viewModel: CalendarViewModel,
+    onBack: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
-    // Usando Surface para garantir que o fundo seja renderizado
+
+    var selectedMoods by remember { mutableStateOf(setOf<String>()) }
+    var selectedHabits by remember { mutableStateOf(setOf<String>()) }
+    var selectedSymptoms by remember { mutableStateOf(setOf<String>()) }
+    var selectedExercises by remember { mutableStateOf(setOf<String>()) }
+    var selectedSex by remember { mutableStateOf(setOf<String>()) }
+    var selectedDischarge by remember { mutableStateOf(setOf<String>()) }
+
+    LaunchedEffect(viewModel.recordSucess) {
+        if (viewModel.recordSucess) {
+            onBack()
+        }
+    }
+
+    fun toggleSelection(currentSet: Set<String>, item: String): Set<String> {
+        return if (currentSet.contains(item)) currentSet - item else currentSet + item
+    }
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -63,197 +89,219 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            // Box com degradê para testar se as cores aparecem
             BoxDegrade(title = "Como está o seu humor?") {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    EmojiItem(R.drawable.rg_happy)
-                    EmojiItem(R.drawable.rg_neutral)
-                    EmojiItem(R.drawable.rg_great)
-                }
+                val moods = listOf(
+                    listOf(
+                        "Feliz" to R.drawable.rg_happy,
+                        "Neutro" to R.drawable.rg_neutral,
+                        "Muito Feliz" to R.drawable.rg_great
+                    ),
+                    listOf(
+                        "Triste" to R.drawable.rg_sad,
+                        "Chorosa" to R.drawable.rg_sad,
+                        "Apaixonada" to R.drawable.rg_fallinglove
+                    ),
+                    listOf(
+                        "Irritada" to R.drawable.rg_upset,
+                        "Surpresa" to R.drawable.rg_surprised,
+                        "Ansiosa" to R.drawable.rg_grimace
+                    )
+                )
 
-                Spacer(modifier = Modifier.height(7.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    EmojiItem(R.drawable.rg_sad)
-                    EmojiItem(R.drawable.rg_sad)
-                    EmojiItem(R.drawable.rg_fallinglove)
-                }
-
-                Spacer(modifier = Modifier.height(7.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    EmojiItem(R.drawable.rg_upset)
-                    EmojiItem(R.drawable.rg_surprised)
-                    EmojiItem(R.drawable.rg_grimace)
+                moods.forEach { rowItems ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        rowItems.forEach { (name, icon) ->
+                            EmojiItem(
+                                iconRes = icon,
+                                isSelected = selectedMoods.contains(name),
+                                onClick = {
+                                    selectedMoods = toggleSelection(selectedMoods, name)
+                                    viewModel.updateHumor(selectedMoods.toList())
+                                }
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(7.dp))
                 }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
             BoxDegrade(title = "Quais hábitos praticou?") {
-                // Aqui você colocará seus botões de hábitos depois
+                val habits = listOf(
+                    listOf("Leitura", "Meditação", "Terapia"),
+                    listOf("Alongamento", "Pintura", "Banho de Sol"),
+                    listOf("DIY", "Esportes", "Outro")
+                )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ){
-                    ButtonItem(text = "Leitura")
-                    ButtonItem(text = "Meditação")
-                    ButtonItem(text = "Terapia")
-                }
-
-                Spacer(modifier = Modifier.height(7.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ){
-                    ButtonItem(text = "Alongamento")
-                    ButtonItem(text = "Pintura")
-                    ButtonItem(text = "Banho de Sol")
-                }
-
-                Spacer(modifier = Modifier.height(7.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ){
-                    ButtonItem(text = "DIY")
-                    ButtonItem(text = "Esportes")
-                    ButtonItem(text = "Outro")
+                habits.forEach { rowItems ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        rowItems.forEach { habit ->
+                            ButtonItem(
+                                text = habit,
+                                isSelected = selectedHabits.contains(habit),
+                                onClick = {
+                                    selectedHabits = toggleSelection(selectedHabits, habit)
+                                    viewModel.updateHabitos(selectedHabits.toList())
+                                }
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(7.dp))
                 }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            // 3. Sintomas
             BoxDegrade(title = "Quais sintomas sentiu?") {
+                val symptoms = listOf(
+                    listOf("Constipação", "Mudança de humor", "Nauseas"),
+                    listOf("Dor de cabeça", "Fadiga", "Cólicas"),
+                    listOf("Acne", "Inchaço", "Outro")
+                )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ){
-                    ButtonItem(text = "Constipação")
-                    ButtonItem(text = "Mudança de humor")
-                    ButtonItem(text = "Nauseas")
-                }
-
-                Spacer(modifier = Modifier.height(7.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ){
-                    ButtonItem(text = "Dor de cabeça")
-                    ButtonItem(text = "Fadiga")
-                    ButtonItem(text = "Cólicas")
-                }
-
-                Spacer(modifier = Modifier.height(7.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ){
-                    ButtonItem(text = "Acne")
-                    ButtonItem(text = "Inchaço")
-                    ButtonItem(text = "Outro")
+                symptoms.forEach { rowItems ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        rowItems.forEach { symptom ->
+                            ButtonItem(
+                                text = symptom,
+                                isSelected = selectedSymptoms.contains(symptom),
+                                onClick = {
+                                    selectedSymptoms = toggleSelection(selectedSymptoms, symptom)
+                                    viewModel.updateSintomas(selectedSymptoms.toList())
+                                }
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(7.dp))
                 }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            // 4. Atividades Físicas
             BoxDegrade(title = "Quais exercicios voce praticou?") {
+                val exercises = listOf(
+                    listOf("Musculação", "Caminhada", "Aerobico"),
+                    listOf("Corrida", "Dança", "Luta"),
+                    listOf("Pilates", "?", "Outro")
+                )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ){
-                    ButtonItem(text = "Musculação")
-                    ButtonItem(text = "Caminhada")
-                    ButtonItem(text = "Aerobico")
-                }
-
-                Spacer(modifier = Modifier.height(7.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ){
-                    ButtonItem(text = "Corrida")
-                    ButtonItem(text = "Dança")
-                    ButtonItem(text = "Luta")
-                }
-
-                Spacer(modifier = Modifier.height(7.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ){
-                    ButtonItem(text = "Pilates")
-                    ButtonItem(text = "?")
-                    ButtonItem(text = "Outro")
+                exercises.forEach { rowItems ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        rowItems.forEach { exercise ->
+                            ButtonItem(
+                                text = exercise,
+                                isSelected = selectedExercises.contains(exercise),
+                                onClick = {
+                                    selectedExercises = toggleSelection(selectedExercises, exercise)
+                                    viewModel.updateAtividadeFisica(selectedExercises.toList())
+                                }
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(7.dp))
                 }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
             BoxDegrade(title = "Vida íntima") {
+                val sexOptions = listOf(
+                    listOf("Não tive relações", "Com proteção"),
+                    listOf("Sem proteção", "Toque sensual"),
+                )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ){
-                    ButtonItem(text = "Não tive relações")
-                    ButtonItem(text = "Com proteção")
-                    ButtonItem(text = "Sem proteção")
-                    ButtonItem(text = "Masturbação")
+                sexOptions.forEach { rowItems ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        rowItems.forEach { opt ->
+                            ButtonItem(
+                                text = opt,
+                                isSelected = selectedSex.contains(opt),
+                                onClick = {
+                                    selectedSex = toggleSelection(selectedSex, opt)
+                                    viewModel.updateSexo(selectedSex.toList())
+                                }
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(7.dp))
                 }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
-
+            // 6. Secreção Vaginal
             BoxDegrade(title = "Secreção vaginal") {
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ){
-                    ButtonItem(text = "Sem secreção")
-                    ButtonItem(text = "Pastosa")
-                    ButtonItem(text = "Aquoso")
-                }
-
-                Spacer(modifier = Modifier.height(7.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ){
-                    ButtonItem(text = "Clara de ovo")
-                    ButtonItem(text = "Corrimento")
+                val discharges = listOf(
+                    listOf("Sem secreção", "Pastosa", "Aquoso"),
+                    listOf("Clara de ovo", "Corrimento")
+                )
+                discharges.forEach { rowItems ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        rowItems.forEach { discharge ->
+                            ButtonItem(
+                                text = discharge,
+                                isSelected = selectedDischarge.contains(discharge),
+                                onClick = {
+                                    selectedDischarge =
+                                        toggleSelection(selectedDischarge, discharge)
+                                    viewModel.updateSecrecao(selectedDischarge.toList())
+                                }
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(7.dp))
                 }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
+                // Exibição de erro se houver
+            viewModel.errorMessage?.let { msg ->
+                Text(
+                    text = msg,
+                    color = Color.Red,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+
+            // Botão de Salvar
             Button(
-                onClick = {/*Salvar no banco?*/},
+                onClick = {
+                    viewModel.createDailyRecord(
+                    onSuccess = {
+                        onBack()
+                    }
+                ) },
+                enabled = viewModel.isLoading != true,
                 modifier = Modifier.size(width = 304.dp, height = 44.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = PinkButton),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
             ) {
-                Text("Salvar", fontSize = 16.sp)
+                if (viewModel.isLoading == true) {
+                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                } else {
+                    Text("Salvar", fontSize = 16.sp)
+                }
             }
         }
     }
@@ -292,11 +340,16 @@ fun BoxDegrade(
 }
 
 @Composable
-fun EmojiItem(iconRes: Int){
+fun EmojiItem(iconRes: Int, isSelected: Boolean, onClick: () -> Unit){
     Box(
         modifier = Modifier
             .size(60.dp)
-            .background(Color.White, CircleShape),
+            .clip(CircleShape)
+            .background(if (isSelected) PinkButton.copy(alpha = 0.3f) else Color.White, CircleShape)
+            .then(
+                if (isSelected) Modifier.border(2.dp, PinkButton, CircleShape) else Modifier
+            )
+            .clickable { onClick() },
         contentAlignment = Alignment.Center
     ){
         Image(
@@ -309,18 +362,21 @@ fun EmojiItem(iconRes: Int){
 }
 
 @Composable
-fun ButtonItem(text: String) { // A função recebe o texto
+fun ButtonItem(
+    text: String,
+    isSelected: Boolean = false,
+    onClick: () -> Unit = {}
+) {
     Button(
-        onClick = { /* Ação */ },
+        onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color.White,
-            contentColor = Color.Black
+            containerColor = if (isSelected) PinkButton else Color.White,
+            contentColor = if (isSelected) Color.White else Color.Black
         ),
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier.height(36.dp),
         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
     ) {
-        // O que o botão vai mostrar (o texto)
         Text(text = text, fontSize = 11.sp, fontWeight = FontWeight.Medium)
     }
 }
@@ -330,6 +386,5 @@ fun ButtonItem(text: String) { // A função recebe o texto
 @Composable
 fun RegisterScreenPreview() {
     Dalia2Theme {
-        RegisterScreen()
     }
 }

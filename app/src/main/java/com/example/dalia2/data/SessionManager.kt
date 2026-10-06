@@ -46,10 +46,6 @@ class SessionManager @Inject constructor(@ApplicationContext context: Context) {
     fun getRefreshToken(): String? = sharedPreferences.getString("refreshToken", null)
 
     fun clearSession() {
-        sharedPreferences.edit()
-            .remove("accessToken")
-            .remove("refreshToken")
-            .remove("app_mode")
-            .apply()
+        sharedPreferences.edit().clear().apply()
     }
 }

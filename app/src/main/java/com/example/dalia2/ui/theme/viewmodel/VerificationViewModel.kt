@@ -57,4 +57,37 @@ class VerificationViewModel @Inject constructor(
             }
         }
     }
+
+    fun onVerifyToken(email: String, token: String) {
+        errorMessage = null
+        if(email.isEmpty()){
+            errorMessage = "Email não encontrado"
+            return
+        }
+        isLoading = true
+        viewModelScope.launch {
+            try {
+                val request = _uiState.value.copy(email=email, token = token)
+                val response = repository.verifiyToken(request)
+                Log.d("TESTE", "tenteando verificar. email: $email e token $token")
+                if (response.isSuccess) {
+                    verificationSucess = true
+                    Log.d("API_SUCESS", "Usuario verificado")
+                } else {
+                    verificationSucess = false
+                    errorMessage = repository.verifiyToken(request).exceptionOrNull()?.message
+                }
+            } catch (e: Exception){
+                Log.d("API_ERROR", e.message.toString())
+                errorMessage = "Falha na verificação"
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun resetState() {
+        verificationSucess = false
+        errorMessage = null
+    }
 }

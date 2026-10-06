@@ -346,7 +346,7 @@ fun EditProfileScreen(
 
                     Button(
                         onClick = {
-                            var search = SearchData( // Supondo que UserRegistre tenha um campo search
+                            var search = SearchData(
                                 age = idade.toIntOrNull() ?: 0,
                                 useContraceptive = usaMetodo,
                                 contraceptiveType = if (usaMetodo) tipoMetodo else null
@@ -361,7 +361,6 @@ fun EditProfileScreen(
                                 pregnancyMonitoring = null
                             )
 
-                            // Agora passamos o objeto e a função de sucesso
                             viewModel.updateUserProfile(
                                 userRegistre = dadosParaAtualizar,
                                 onSuccess = {

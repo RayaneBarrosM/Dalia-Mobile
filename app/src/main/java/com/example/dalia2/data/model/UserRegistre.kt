@@ -25,9 +25,18 @@ data class LoginRequest(
     val password: String
 )
 
+data class ForgetPassword(
+    val email: String
+)
+
 data class VerificationRequest(
     val email: String,
     val token: String
+)
+
+data class ChangePassword(
+    val password: String,
+    val passConfirmation: String
 )
 
 data class TokensResponse(
@@ -74,6 +83,27 @@ data class CycleData(
     val inicioPeriodoFertil: LocalDate,
     val fimPeriodoFertil: LocalDate,
     val diaOvulacao: LocalDate
+)
+
+data class DailyRecordRequest(
+    val mood: List<String>,
+    val habits: List<String>,
+    val symptoms: List<String>,
+    val physical_activity: List<String>,
+    val sex: List<String>,
+    val discharge: List<String>
+)
+
+data class DailyRecordResponse(
+    val id: String,
+    val idUser: String,
+    val date: String,
+    val mood: List<String>,
+    val habits: List<String>,
+    val symptoms: List<String>,
+    val physical_activity: List<String>,
+    val sex: List<String>,
+    val discharge: List<String>
 )
 
 data class PregnancyRequest(

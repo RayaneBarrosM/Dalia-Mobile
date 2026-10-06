@@ -3,14 +3,14 @@ package com.example.dalia2.data.model
 import java.time.LocalDate
 
 data class ProfileResponse(
-    val user: UserRequest,
+    val user: UserRequest?,
     val search: SearchData?,
     val pregnancyMonitoring: PregnancyData?
 ){
     val currentMode: AppMode
         get()= when{
-            user.modo.equals("GRAVIDEZ", ignoreCase = true) -> AppMode.GRAVIDEZ
-            user.modo.equals("MENSTRUACAO", ignoreCase = true) -> AppMode.MENSTRUACAO
+            user?.modo?.equals("GRAVIDEZ", ignoreCase = true) == true -> AppMode.GRAVIDEZ
+            user?.modo?.equals("MENSTRUACAO", ignoreCase = true) == true -> AppMode.MENSTRUACAO
 
             pregnancyMonitoring != null && pregnancyMonitoring.isPregnant -> AppMode.GRAVIDEZ
             else -> AppMode.MENSTRUACAO
@@ -22,7 +22,7 @@ data class UserRequest(
     val surname: String?,
     val email: String?,
     val password: String? = null,
-    val modo: String
+    val modo: String?
 )
 
 data class SearchData(

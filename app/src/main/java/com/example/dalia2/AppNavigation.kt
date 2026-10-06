@@ -18,6 +18,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.dalia2.data.SessionManager
 import com.example.dalia2.data.model.AppMode
+import com.example.dalia2.data.session.UserSession.profileCache
 import com.example.dalia2.ui.components.BottomNavigationBar
 import com.example.dalia2.ui.theme.screen.*
 import com.example.dalia2.ui.theme.viewmodel.CalendarViewModel
@@ -38,11 +39,9 @@ fun AppNavigation() {
 
     val viewmodelPregnancyCalendar: PregnancyCalendarViewModel = hiltViewModel(context as ComponentActivity)
     val viewmodelProfile: ProfileViewModel = hiltViewModel(context as ComponentActivity)
-    val viewmodelQuiz: QuizViewModel = hiltViewModel(context as ComponentActivity)
     val viewmodelCalendar: CalendarViewModel = hiltViewModel(context as ComponentActivity)
     val viewModelForum: ForumViewModel = hiltViewModel(context as ComponentActivity)
     val viewModelPregnancyQuiz: PregnancyQuizViewModel = hiltViewModel(context as ComponentActivity)
-
     val currentMode by viewmodelProfile.currentMode.collectAsState()
 
     // Função auxiliar para determinar a rota de Home correta dinamicamente
@@ -98,6 +97,39 @@ fun AppNavigation() {
                 },
                 onSignUpClick = {
                     navController.navigate("signup")
+                },
+                onForgetPassClick = {
+                    navController.navigate("forgetPass")
+                }
+            )
+        }
+
+        composable("forgetPass") {
+            ForgetPasswordSreen(navController = navController,
+                onEmailSucess = {
+                    navController.navigate("verificationToken")
+                }
+            )
+        }
+
+        composable("verificationToken/{email}") { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email") ?: ""
+            VerificationScreen(
+                email = email,
+                isPasswordReset = true,
+                onVerificationSucess = {
+                    navController.navigate("changePass")
+                },
+                onBackClick ={
+                    navController.navigate("signup")
+                }
+            )
+        }
+
+        composable("changePass") {
+            ChangePasswordScreen(
+                onChangeClick = {
+                    navController.navigate("login")
                 }
             )
         }
@@ -116,9 +148,12 @@ fun AppNavigation() {
         composable("verification/{email}") { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
             VerificationScreen(
+                isPasswordReset = false,
                 email = email,
                 onVerificationSucess = {
-                    navController.navigate("startQuiz")
+                    navController.navigate("startQuiz"){
+                        popUpTo("verification/{email}") { inclusive = true }
+                    }
                 },
                 onBackClick ={
                     navController.navigate("signup")
@@ -135,7 +170,9 @@ fun AppNavigation() {
         }
 
         composable("quizPeriod") {
-            QuizPeriodScreen(viewModel = viewmodelQuiz,
+                val viewmodelQuiz: QuizViewModel = hiltViewModel()
+            QuizPeriodScreen(
+                viewModel = viewmodelQuiz,
                 onQuizComplete = {
                     viewmodelProfile.loadUserProfile(forceRefresh = true)
                     navController.navigate("home") {
@@ -147,7 +184,8 @@ fun AppNavigation() {
 
 
         composable("quizPregnant") {
-            QuizPregnantScreen(viewModel = viewModelPregnancyQuiz,
+            QuizPregnantScreen(
+                viewModel = viewModelPregnancyQuiz,
                 onQuizComplete = {
                     viewmodelProfile.loadUserProfile(forceRefresh = true)
                     navController.navigate("homePregnant") {
@@ -190,7 +228,10 @@ fun AppNavigation() {
 
 
         composable("register") {
-            RegisterScreen()
+            RegisterScreen(
+                viewModel = viewmodelCalendar,
+                onBack = { navController.popBackStack()}
+            )
         }
 
         composable ("calendar"){
@@ -247,13 +288,9 @@ fun AppNavigation() {
         }
 
         composable("editProfileScreen") {
-            val parentEntry = remember(it) {
-                navController.getBackStackEntry("settings")
-            }
-            val viewModel: ProfileViewModel = hiltViewModel(parentEntry)
             Log.d("EditProfileScreen", "passando aqui")
             EditProfileScreen(
-                viewModel = viewModel,
+                viewModel = viewmodelProfile,
                 onBackClick = { navController.popBackStack() }
             )
         }
@@ -278,6 +315,9 @@ fun AppNavigation() {
                     }
                 },
                 onLogoutClick = {
+                    sessionManager.clearSession()
+                    profileCache = null
+                    viewmodelProfile.resetState()
                     navController.navigate("login") {
                         popUpTo(0) { inclusive = true }
                         launchSingleTop = true

@@ -5,10 +5,14 @@ import com.example.dalia2.data.SessionManager
 import com.example.dalia2.data.local.CicloDao
 import com.example.dalia2.data.local.CicloEntity
 import com.example.dalia2.data.model.Articles
+import com.example.dalia2.data.model.ChangePassword
 import com.example.dalia2.data.model.Comments
 import com.example.dalia2.data.model.CycleData
+import com.example.dalia2.data.model.DailyRecordRequest
+import com.example.dalia2.data.model.DailyRecordResponse
 import com.example.dalia2.data.model.DenunciaResponse
 import com.example.dalia2.data.model.EventCalendar
+import com.example.dalia2.data.model.ForgetPassword
 import com.example.dalia2.data.model.LoginRequest
 import com.example.dalia2.data.model.Posts
 import com.example.dalia2.data.model.PregnancyRequest
@@ -37,7 +41,7 @@ class DaliaRepository @Inject constructor(
             if (response.isSuccessful) {
                 val userResponse = response.body()
                 if (userResponse != null) {
-                    Result.success(userResponse) // Agora os tipos batem!
+                    Result.success(userResponse)
                 } else {
                     Result.failure(Exception("Corpo da resposta vazio"))
                 }
@@ -109,6 +113,82 @@ class DaliaRepository @Inject constructor(
             Result.failure(e)
         }
     }
+
+    suspend fun forgetPassword( forgetPassword: ForgetPassword): Result<String>{
+        return try {
+            val response = api.forgetPass(forgetPassword)
+            if (response.isSuccessful) {
+                val emailResponse = response.body()?.string()
+                if (emailResponse != null) {
+                    Result.success(emailResponse)
+                } else {
+                    Result.failure(Exception("Corpo da resposta vazio"))
+                }
+            } else {
+                val errorCode = response.code()
+                val errorBody = response.errorBody()?.string() ?: "Erro desconhecido"
+                val cleanMessage = errorBody.replace(Regex("""\d{3}:\s*"""),"").replace("}","")
+
+                Log.e("REPO_ERROR", "Código: $errorCode | Mensagem: $errorBody")
+
+                Result.failure(Exception(cleanMessage))
+            }
+        } catch (e: Exception) {
+            Log.e("REPO_EXCEPTION_FORGET", "Falha catastrófica", e)
+            Result.failure(e)
+        }
+    }
+
+    suspend fun verifiyToken( verificationRequest: VerificationRequest): Result<TokensResponse>{
+        return try {
+            val response = api.verifyToken(verificationRequest)
+            if (response.isSuccessful) {
+                // Se o backend retorna um JSON, o .string() lê o texto puro dele
+                val tokens = response.body()
+                if(tokens != null){
+                    sessionM.saveAccessToken(tokens.token)
+                    sessionM.saveRefreshToken(tokens.refreshToken)
+                    Result.success(tokens)
+                }else{
+                    Result.failure(Exception("Resposta vazia"))
+                }
+            } else {
+                val errorCode = response.code()
+                val errorBody = response.errorBody()?.string() ?: "Erro desconhecido"
+                val cleanMessage = errorBody.replace(Regex("""\d{3}:\s*"""),"").replace("}","")
+
+                Log.e("REPO_ERROR", "Código: $errorCode | Mensagem: $errorBody")
+
+                Result.failure(Exception(cleanMessage))
+            }
+        } catch (e: Exception) {
+            Log.e("REPO_EXCEPTION", "Falha catastrófica", e)
+            Result.failure(e)
+        }
+    }
+
+    suspend fun changePass(changePassword: ChangePassword): Result<String> {
+        return try{
+            val response = api.changePass(changePassword)
+            if (response.isSuccessful) {
+                val senhaResponse = response.body()
+                if (senhaResponse != null) {
+                    Result.success(senhaResponse)
+                } else {
+                    Result.failure(Exception("Corpo da resposta vazio"))
+                }
+            } else {
+                val errorCode = response.code()
+                val errorBody = response.errorBody()?.string() ?: "Erro desconhecido"
+                val cleanMessage = errorBody.replace(Regex("""\d{3}:\s*"""),"").replace("}","")
+                Result.failure(Exception(cleanMessage))
+            }
+        } catch (e: Exception) {
+            Log.e("REPO_EXCEPTION", "Falha catastrófica", e)
+            Result.failure(e)
+        }
+    }
+
     suspend fun search(SearchRequest: SearchRequest): Result<SearchResponse> {
         return try {
             val response = api.search(SearchRequest)
@@ -192,6 +272,27 @@ class DaliaRepository @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e("REPO_EXCEPTION", "Falha catastrófica", e)
+            Result.failure(e)
+        }
+    }
+
+    suspend fun createRecord(dailyRecordRequest: DailyRecordRequest): Result<DailyRecordResponse> {
+        return try {
+            val response = api.createDailyRecord(dailyRecordRequest)
+            if (response.isSuccessful) {
+                val recordResponse = response.body()
+                if (recordResponse != null) {
+                    Result.success(recordResponse)
+                } else {
+                    Result.failure(Exception("Corpo da resposta vazio"))
+                }
+            } else {
+                val errorCode = response.code()
+                val errorBody = response.errorBody()?.string() ?: "Erro desconhecido"
+                Result.failure(Exception("Erro desconhecido"))
+            }
+        } catch (e: Exception) {
+            Log.e("REPO_EXCEPTION_RECORD", "Falha catastrófica", e)
             Result.failure(e)
         }
     }

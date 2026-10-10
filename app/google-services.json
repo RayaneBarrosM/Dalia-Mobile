@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "671477796858",
+    "project_id": "dalia-app-30ad1",
+    "storage_bucket": "dalia-app-30ad1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:671477796858:android:1c1f6edaacb7507a2f1e43",
+        "android_client_info": {
+          "package_name": "com.example.dalia2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAD3RXD1vW4k09cKUyw2EtE8BVavtZPpxY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

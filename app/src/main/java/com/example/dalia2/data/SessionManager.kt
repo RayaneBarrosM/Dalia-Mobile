@@ -2,9 +2,11 @@ package com.example.dalia2.data
 
 import android.content.Context
 import android.system.Os.remove
+import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.example.dalia2.data.model.AppMode
+import com.example.dalia2.data.model.ProfileResponse
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 

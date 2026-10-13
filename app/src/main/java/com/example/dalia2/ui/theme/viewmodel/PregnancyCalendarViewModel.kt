@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.dalia2.data.SessionManager
 import com.example.dalia2.data.model.AppMode
 import com.example.dalia2.data.model.EventCalendar
-import com.example.dalia2.data.model.Posts
 import com.example.dalia2.data.model.Weeks
 import com.example.dalia2.data.repository.DaliaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -58,17 +57,18 @@ class PregnancyCalendarViewModel @Inject constructor(
         isModoGravidez = sessionManager.getAppMode() == AppMode.GRAVIDEZ
     }
 
-    fun inciarDados(){
+    fun inciarDados(dataInicio: String?, semanas: Int?){
         viewModelScope.launch {
-            val dataInicio = repository.getDataInicio()
-            semanaAtual = calcularSemana(dataInicio)
+            if(semanas != null){
+                semanaAtual = calcularSemana(dataInicio, semanas)
+            }
             carregarSemana(semanaAtual)
 
         }
     }
 
-    fun calcularSemana(dataInicio: String?): Int {
-        if (dataInicio == null) return 1
+    fun calcularSemana(dataInicio: String?, semana: Int): Int {
+        if (dataInicio == null) return semana
         val dataInicio = LocalDate.parse(dataInicio)
         val diasPassados = ChronoUnit.DAYS.between(dataInicio, LocalDate.now())
         val semanas = (diasPassados / 7).toInt() + 1

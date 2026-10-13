@@ -14,7 +14,6 @@ import com.example.dalia2.data.model.ProfileRequest
 import com.example.dalia2.data.model.ProfileResponse
 import com.example.dalia2.data.model.SearchData
 import com.example.dalia2.data.repository.DaliaRepository
-import com.example.dalia2.data.session.UserSession
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -54,9 +53,10 @@ class ProfileViewModel @Inject constructor(
 
     fun loadUserProfile(forceRefresh: Boolean = false) {
         viewModelScope.launch {
-            if (UserSession.profileCache == null || forceRefresh) {
+            if (_uiState == null || forceRefresh) {
                 isLoading = true
                 val response = repository.getUserFullProfile()
+                Log.d("API_RESPONSE_PERFIL", "Resposta da API: $response")
                 if (response.isSuccess) {
                     val userProfile = response.getOrThrow()
                     _uiState = userProfile
@@ -65,8 +65,6 @@ class ProfileViewModel @Inject constructor(
                     }
                 }
                 isLoading = false
-            } else {
-                _uiState = UserSession.profileCache
             }
         }
     }
@@ -79,7 +77,7 @@ class ProfileViewModel @Inject constructor(
             isLoading = true
 
             val currentUser = _uiState?.user
-            val currentPregnancy = _uiState?.pregnancyMonitoring
+            val currentPregnancy = _uiState?.pregnancy
 
             val profileRequest = ProfileRequest(
                 name = currentUser?.name,
@@ -99,8 +97,8 @@ class ProfileViewModel @Inject constructor(
                 )
             )
             val result = repository.updatePerfil(profileRequest)
-            result.onSuccess { response ->
-                UserSession.profileCache = null
+            result.onSuccess {
+                sessionManager.saveAppMode(AppMode.MENSTRUACAO)
                 loadUserProfile(forceRefresh = true)
                 onSuccess()
             }.onFailure { error ->
@@ -154,7 +152,6 @@ class ProfileViewModel @Inject constructor(
         _errorMessage.value = null
         _perfil.value = null
         isLoading = false
-        UserSession.profileCache = null
         sessionManager.clearSession()
     }
 }

@@ -1,5 +1,6 @@
 package com.example.dalia2.ui.theme.screen
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,6 +36,7 @@ import com.example.dalia2.ui.theme.Purple
 import com.example.dalia2.ui.theme.Red
 import com.example.dalia2.ui.theme.Dalia2Theme
 import com.example.dalia2.ui.theme.viewmodel.PregnancyCalendarViewModel
+import com.example.dalia2.ui.theme.viewmodel.ProfileViewModel
 
 //import io.coil.compose.AsyncImage
 
@@ -52,11 +54,14 @@ data class NewsItem(
 @Composable
 fun HomePregnantScreen(
     viewModel: PregnancyCalendarViewModel,
+    viewModelProfile: ProfileViewModel,
     onNavigateToRegister: () -> Unit = {},
     onNavigateToCalendar: () -> Unit = {},
     onNavigateToArticle: (String) -> Unit = {},
     onNavigateToGeneralNews: () -> Unit = {}
 ) {
+
+
 
     val noticiasDiarias = remember {
         listOf(
@@ -73,12 +78,18 @@ fun HomePregnantScreen(
     }
 
     val semana by viewModel.semana.collectAsState()
+    val perfil = viewModelProfile._uiState
 
-// E usar semanaAtual?.tamanhoCm, semanaAtual?.peso, etc.
-    val scrollState = rememberScrollState() // Corrigido para índice 0
+    val scrollState = rememberScrollState()
 
-    LaunchedEffect(Unit){
-        viewModel.inciarDados()
+    LaunchedEffect(perfil) {
+        if (perfil == null) {
+            viewModelProfile.loadUserProfile()
+            Log.d("TESTE_VIEWMODEL","perfil veio null no viewmodel")
+        } else {
+            viewModel.inciarDados(perfil.pregnancy?.startDate, perfil.pregnancy?.gestationWeeks)
+            Log.d("TESTE_VIEWMODEL","perfil TEM CONTEUDO E ESSE É DATA: " + perfil.pregnancy?.startDate)
+        }
     }
 
     Column(
@@ -110,7 +121,7 @@ fun HomePregnantScreen(
                 ) {
                     Column(horizontalAlignment = Alignment.Start) {
                         Text(text = "Tamanho", fontSize = 14.sp, color = Color.DarkGray)
-                        Text(text = "${semana?.tamanho} cm", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text(text = "${semana?.tamanho}", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
 
                     Box(
@@ -130,7 +141,7 @@ fun HomePregnantScreen(
 
                     Column(horizontalAlignment = Alignment.End) {
                         Text(text = "Peso", fontSize = 14.sp, color = Color.DarkGray)
-                        Text(text = "${semana?.peso} g", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text(text = "${semana?.peso}", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
                 }
 

@@ -6,7 +6,7 @@ import java.time.LocalDate
 
 @Entity(tableName = "ciclo" )
 data class CicloEntity (
-    @PrimaryKey(autoGenerate = true)  val id: Int = 1 , // ID auto-incrementado
+    @PrimaryKey(autoGenerate = true)  val id: Int = 0 , // ID auto-incrementado
     val minCycleDuration: Int,
     val maxCycleDuration: Int,
     val lastMenstruationDay: String,

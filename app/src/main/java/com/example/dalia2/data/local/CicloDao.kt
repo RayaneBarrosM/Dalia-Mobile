@@ -12,6 +12,11 @@ interface CicloDao {
     suspend fun update( ciclo: CicloEntity)
     @Delete
     suspend fun delete( ciclo: CicloEntity)
-    @Query("SELECT * FROM ciclo")
-    suspend fun getCiclo(): CicloEntity?
+    // Obtém o histórico completo de ciclos
+    @Query("SELECT * FROM ciclo ORDER BY id DESC")
+    suspend fun getAllCiclos(): List<CicloEntity>
+
+    // Obtém apenas o ciclo mais recente gravado
+    @Query("SELECT * FROM ciclo ORDER BY id DESC LIMIT 1")
+    suspend fun getUltimoCiclo(): CicloEntity?
 }

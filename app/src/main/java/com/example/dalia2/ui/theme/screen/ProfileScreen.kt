@@ -235,11 +235,11 @@ fun ProfileScreen(
                         // Exibe apenas se estiver no modo gravidez
                         InfoSection(
                             label = "Semanas de Gestação",
-                            value = "${state?.pregnancyMonitoring?.gestationWeeks ?: 0} semanas"
+                            value = "${state?.pregnancy?.gestationWeeks ?: 0} semanas"
                         )
                         InfoSection(
                             label = "Previsão do Parto",
-                            value = state?.pregnancyMonitoring?.expectedBirthDate ?: "Não informada"
+                            value = state?.pregnancy?.expectedBirthDate ?: "Não informada"
                         )
                     } else {
                         InfoSection(

@@ -358,7 +358,8 @@ fun EditProfileScreen(
                                 email = email?:"",
                                 password = if (senha.isBlank()) null else senha,
                                 search = search,
-                                pregnancyMonitoring = null
+                                pregnancyMonitoring = null,
+                                modo = state?.user?.modo
                             )
 
                             viewModel.updateUserProfile(

@@ -18,7 +18,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.dalia2.data.SessionManager
 import com.example.dalia2.data.model.AppMode
-import com.example.dalia2.data.session.UserSession.profileCache
 import com.example.dalia2.ui.components.BottomNavigationBar
 import com.example.dalia2.ui.theme.screen.*
 import com.example.dalia2.ui.theme.viewmodel.CalendarViewModel
@@ -33,7 +32,7 @@ fun AppNavigation() {
     val navController = rememberNavController()
     val context = LocalContext.current
     val sessionManager = remember { SessionManager(context) }
-    
+
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -46,11 +45,12 @@ fun AppNavigation() {
 
     // Função auxiliar para determinar a rota de Home correta dinamicamente
     val homeRoute = if (currentMode == AppMode.GRAVIDEZ) "homePregnant" else "home"
-
+    val perfil = viewmodelProfile._uiState
     // Lista de rotas onde a barra deve aparecer
     val bottomBarRoutes = listOf("home", "homePregnant","calendar", "bot", "forum", "settings")
 
     val startDestination = if (!sessionManager.getAccessToken().isNullOrBlank()) {
+        Log.d("TESTE_CHANCHE_SESSION", "Esse aqui é o que temos no nosso cache: "+ perfil + "tokens: " + sessionManager.getRefreshToken()+ "Modo: " + sessionManager.getAppMode())
         val mode = sessionManager.getAppMode()
         if (mode == AppMode.GRAVIDEZ) "homePregnant" else "home"
     } else {
@@ -211,6 +211,7 @@ fun AppNavigation() {
         composable("homePregnant") {
             HomePregnantScreen(
                 viewModel = viewmodelPregnancyCalendar,
+                viewModelProfile = viewmodelProfile,
                 onNavigateToRegister = {
                     navController.navigate("register")
                 },
@@ -315,8 +316,6 @@ fun AppNavigation() {
                     }
                 },
                 onLogoutClick = {
-                    sessionManager.clearSession()
-                    profileCache = null
                     viewmodelProfile.resetState()
                     navController.navigate("login") {
                         popUpTo(0) { inclusive = true }

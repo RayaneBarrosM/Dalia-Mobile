@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.dalia2.data.model.CycleData
 import com.example.dalia2.data.model.DailyRecordRequest
 import com.example.dalia2.data.repository.DaliaRepository
-import com.example.dalia2.data.session.UserSession
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,8 +19,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
-    private val repository: DaliaRepository,
+    private val repository: DaliaRepository
 ) : ViewModel() {
+
     var registroSucesso by mutableStateOf(false)
         private set
     var recordSucess by mutableStateOf(false)
@@ -101,6 +101,7 @@ class CalendarViewModel @Inject constructor(
                 if (response.isSuccess) {
                     val dados = response.getOrNull()
                     listarDatas(dados)
+
                 }
                 errorMessage = repository.registrarMenstruacao().exceptionOrNull()?.message
                 Log.d("API_ERROR", "Erro: ")
@@ -152,6 +153,8 @@ class CalendarViewModel @Inject constructor(
 
         // Salvamos a lista completa de ovulações estendida em uma variável interna para o clique do dia funcionar
         diasOvulacaoAcumulados = listOvulacao
+
+
     }
 
 

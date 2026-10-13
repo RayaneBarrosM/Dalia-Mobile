@@ -5,14 +5,14 @@ import java.time.LocalDate
 data class ProfileResponse(
     val user: UserRequest?,
     val search: SearchData?,
-    val pregnancyMonitoring: PregnancyData?
+    val pregnancy: PregnancyData?
 ){
     val currentMode: AppMode
         get()= when{
             user?.modo?.equals("GRAVIDEZ", ignoreCase = true) == true -> AppMode.GRAVIDEZ
             user?.modo?.equals("MENSTRUACAO", ignoreCase = true) == true -> AppMode.MENSTRUACAO
 
-            pregnancyMonitoring != null && pregnancyMonitoring.isPregnant -> AppMode.GRAVIDEZ
+            pregnancy != null && pregnancy.isPregnant -> AppMode.GRAVIDEZ
             else -> AppMode.MENSTRUACAO
         }
 }
@@ -43,7 +43,7 @@ data class ProfileRequest(
     val surname: String?,
     val email: String?,
     val password: String? = null,
-    val modo: String? = null,
+    val modo: String?,
     val search: SearchData?,
     val pregnancyMonitoring: PregnancyData?
 )

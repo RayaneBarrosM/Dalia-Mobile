@@ -25,7 +25,6 @@ import com.example.dalia2.data.model.UserRegistre
 import com.example.dalia2.data.model.UserResponse
 import com.example.dalia2.data.model.VerificationRequest
 import com.example.dalia2.data.model.Weeks
-import com.example.dalia2.data.session.UserSession
 import com.example.dalia2.network.ApiService
 import okhttp3.RequestBody
 import javax.inject.Inject
@@ -222,7 +221,8 @@ class DaliaRepository @Inject constructor(
 
                 if (menstruacaoResponse != null) {
                     //Salva Local
-                    val entity = CicloEntity(
+                    cicloDao.insert(
+                        CicloEntity(
                         minCycleDuration = menstruacaoResponse.minCycleDuration,
                         maxCycleDuration = menstruacaoResponse.maxCycleDuration,
                         lastMenstruationDay = menstruacaoResponse.lastMenstruationDay.toString(),
@@ -231,8 +231,7 @@ class DaliaRepository @Inject constructor(
                         inicioPeriodoFertil = menstruacaoResponse.inicioPeriodoFertil.toString(),
                         fimPeriodoFertil = menstruacaoResponse.fimPeriodoFertil.toString(),
                         diaOvulacao = menstruacaoResponse.diaOvulacao.toString()
-                    )
-                    cicloDao.update(entity)
+                        ))
                     Result.success(menstruacaoResponse) // Agora os tipos batem!
                 } else {
                     Result.failure(Exception("Corpo da resposta vazio"))
@@ -258,6 +257,7 @@ class DaliaRepository @Inject constructor(
                 val cicloResponse = response.body()
 
                 if (cicloResponse != null) {
+
                     Result.success(cicloResponse)
                 } else {
                     Result.failure(Exception("Corpo da resposta vazio"))
@@ -385,20 +385,6 @@ class DaliaRepository @Inject constructor(
         }
     }
 
-    suspend fun getDataInicio(): String? {
-        return try {
-            val userProfile = api.getPerfil() // Chama endpoint do perfil
-            val dataStr = userProfile.body()?.pregnancyMonitoring?.startDate // Pega o campo da data
-                if (dataStr != null) {
-                    dataStr.toString()
-                } else {
-                    null
-                }
-            } catch (e: Exception) {
-                null
-            }
-        }
-
     suspend fun getArticles(): Result<List<Articles>> {
         return try {
             val response = api.getArticles()
@@ -479,16 +465,12 @@ class DaliaRepository @Inject constructor(
     }
 
     suspend fun getUserFullProfile(): Result<ProfileResponse> {
-        UserSession.profileCache?.let {
-            return Result.success(it)
-        }
-        return try {
+                return try {
             val response = api.getPerfil()
             if (response.isSuccessful) {
                 val body:  ProfileResponse? = response.body()
                 if (body != null) {
                     val data = response.body()!!
-                    UserSession.profileCache = data
                     Result.success(data)
                 } else {
                     Result.failure(Exception("Corpo vazio"))

@@ -112,8 +112,10 @@ fun HomeScreen(
     val currentMode = stateProfile?.currentMode ?: AppMode.MENSTRUACAO
     val isModoGravidez = currentMode == AppMode.GRAVIDEZ
 
-    if(stateProfile?.search == null){
-        onNavigateToQuiz()
+    if(stateProfile != null){
+        if(stateProfile.search == null){
+            onNavigateToQuiz()
+        }
     }
 
     val scrollState = rememberScrollState()

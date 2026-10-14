@@ -45,21 +45,19 @@ fun AppNavigation() {
     val viewmodelCalendar: CalendarViewModel = hiltViewModel(context as ComponentActivity)
     val viewModelForum: ForumViewModel = hiltViewModel(context as ComponentActivity)
     val viewModelPregnancyQuiz: PregnancyQuizViewModel = hiltViewModel(context as ComponentActivity)
-    val currentMode by viewmodelProfile.currentMode.collectAsState()
 
     // Função auxiliar para determinar a rota de Home correta dinamicamente
-    val homeRoute = if (currentMode == AppMode.GRAVIDEZ) "homePregnant" else "home"
-    val perfil = viewmodelProfile._uiState
+    val homeRoute = if (sessionManager.getAppMode() == AppMode.GRAVIDEZ) "homePregnant" else "home"
     // Lista de rotas onde a barra deve aparecer
     val bottomBarRoutes = listOf("home", "homePregnant","calendar", "bot", "forum", "settings")
 
     val startDestination = rememberSaveable {
         if (!sessionManager.getAccessToken().isNullOrBlank()) {
-        Log.d("TESTE_CHANCHE_SESSION", "Esse aqui é o que temos no nosso cache: "+ perfil + "tokens: " + sessionManager.getRefreshToken()+ "Modo: " + sessionManager.getAppMode())
-        val mode = sessionManager.getAppMode()
-        if (mode == AppMode.GRAVIDEZ) "homePregnant" else "home"
+            Log.d("TESTE_CHANCHE_SESSION", "Modo: " + sessionManager.getAppMode())
+            val mode = sessionManager.getAppMode()
+            if (mode == AppMode.GRAVIDEZ) "homePregnant" else "home"
         } else {
-        "welcomeScreen"
+            "welcomeScreen"
         }
     }
 
@@ -68,7 +66,7 @@ fun AppNavigation() {
             if (currentRoute in bottomBarRoutes) {
                 BottomNavigationBar(
                     navController = navController,
-                    currentMode = currentMode
+                    currentMode = sessionManager.getAppMode()
                 )
             }
         }

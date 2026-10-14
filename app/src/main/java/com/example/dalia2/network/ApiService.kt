@@ -45,10 +45,10 @@ interface ApiService {
         @Body request: VerificationRequest
     ): Response<TokensResponse>
 
-    @POST("/api/user/resetPassword")
+    @PUT("/api/user/resetPassword")
     suspend fun changePass(
         @Body request: ChangePassword
-    ): Response<String>
+    ): Response<ResponseBody>
 
     @POST("/api/user/refresh")
     fun refreshToken(

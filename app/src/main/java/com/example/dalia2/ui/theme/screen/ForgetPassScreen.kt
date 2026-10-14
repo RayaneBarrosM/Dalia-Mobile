@@ -39,7 +39,7 @@ import java.net.URLEncoder
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ForgetPasswordSreen(
-    viewModel: LoginViewModel = hiltViewModel(),
+    viewModel: LoginViewModel,
     navController: NavController,
     onEmailSucess: () -> Unit
 ) {
@@ -49,7 +49,7 @@ fun ForgetPasswordSreen(
     LaunchedEffect(viewModel.forgetSucess) {
         if(viewModel.forgetSucess){
             val encodedEmail = URLEncoder.encode(email, "UTF-8")
-            navController.navigate("verification/$encodedEmail")
+            navController.navigate("verificationToken/$encodedEmail")
         }
     }
     Box(modifier = Modifier.fillMaxSize()) {

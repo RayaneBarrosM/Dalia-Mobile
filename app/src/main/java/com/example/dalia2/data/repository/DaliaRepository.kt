@@ -170,7 +170,7 @@ class DaliaRepository @Inject constructor(
         return try{
             val response = api.changePass(changePassword)
             if (response.isSuccessful) {
-                val senhaResponse = response.body()
+                val senhaResponse = response.body()?.string()
                 if (senhaResponse != null) {
                     Result.success(senhaResponse)
                 } else {
@@ -180,6 +180,7 @@ class DaliaRepository @Inject constructor(
                 val errorCode = response.code()
                 val errorBody = response.errorBody()?.string() ?: "Erro desconhecido"
                 val cleanMessage = errorBody.replace(Regex("""\d{3}:\s*"""),"").replace("}","")
+                Log.e("REPO_ERROR", "Código: $errorCode | Mensagem: $errorBody")
                 Result.failure(Exception(cleanMessage))
             }
         } catch (e: Exception) {

@@ -1,5 +1,6 @@
 package com.example.dalia2.ui.theme.screen
 
+import android.util.Log
 import com.example.dalia2.ui.theme.viewmodel.LoginViewModel
 
 import androidx.compose.ui.graphics.Color
@@ -27,6 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dalia2.R
 import com.example.dalia2.ui.theme.PinkButton
 import androidx.compose.material3.Surface
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -34,18 +36,21 @@ import androidx.compose.ui.tooling.preview.Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChangePasswordScreen(
-    viewModel: LoginViewModel = hiltViewModel(),
+    viewModel: LoginViewModel,
     onChangeClick: () -> Unit,
 ) {
     var password by remember { mutableStateOf("") }
     var passConfirmation by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
 
     var passwordError by remember { mutableStateOf(false) }
     var passwordVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(viewModel.changeSucess) {
         if (viewModel.changeSucess) {
+            android.widget.Toast.makeText(context, "Senha alterada com sucesso!", android.widget.Toast.LENGTH_LONG).show()
+            Log.d("TESTE_CHANGE_SCREEN","Esse é o changeSucess "+viewModel.changeSucess)
             onChangeClick()
         }
     }

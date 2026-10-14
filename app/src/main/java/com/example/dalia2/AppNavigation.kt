@@ -10,9 +10,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.navigation.compose.NavHost
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -22,6 +24,7 @@ import com.example.dalia2.ui.components.BottomNavigationBar
 import com.example.dalia2.ui.theme.screen.*
 import com.example.dalia2.ui.theme.viewmodel.CalendarViewModel
 import com.example.dalia2.ui.theme.viewmodel.ForumViewModel
+import com.example.dalia2.ui.theme.viewmodel.LoginViewModel
 import com.example.dalia2.ui.theme.viewmodel.PregnancyCalendarViewModel
 import com.example.dalia2.ui.theme.viewmodel.PregnancyQuizViewModel
 import com.example.dalia2.ui.theme.viewmodel.ProfileViewModel
@@ -36,6 +39,7 @@ fun AppNavigation() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
+    val viewModelLogin: LoginViewModel = hiltViewModel(context as ComponentActivity)
     val viewmodelPregnancyCalendar: PregnancyCalendarViewModel = hiltViewModel(context as ComponentActivity)
     val viewmodelProfile: ProfileViewModel = hiltViewModel(context as ComponentActivity)
     val viewmodelCalendar: CalendarViewModel = hiltViewModel(context as ComponentActivity)
@@ -49,12 +53,14 @@ fun AppNavigation() {
     // Lista de rotas onde a barra deve aparecer
     val bottomBarRoutes = listOf("home", "homePregnant","calendar", "bot", "forum", "settings")
 
-    val startDestination = if (!sessionManager.getAccessToken().isNullOrBlank()) {
+    val startDestination = rememberSaveable {
+        if (!sessionManager.getAccessToken().isNullOrBlank()) {
         Log.d("TESTE_CHANCHE_SESSION", "Esse aqui é o que temos no nosso cache: "+ perfil + "tokens: " + sessionManager.getRefreshToken()+ "Modo: " + sessionManager.getAppMode())
         val mode = sessionManager.getAppMode()
         if (mode == AppMode.GRAVIDEZ) "homePregnant" else "home"
-    } else {
+        } else {
         "welcomeScreen"
+        }
     }
 
     Scaffold(
@@ -105,7 +111,9 @@ fun AppNavigation() {
         }
 
         composable("forgetPass") {
-            ForgetPasswordSreen(navController = navController,
+            ForgetPasswordSreen(
+                viewModel = viewModelLogin,
+                navController = navController,
                 onEmailSucess = {
                     navController.navigate("verificationToken")
                 }
@@ -128,6 +136,7 @@ fun AppNavigation() {
 
         composable("changePass") {
             ChangePasswordScreen(
+                viewModel = viewModelLogin,
                 onChangeClick = {
                     navController.navigate("login")
                 }
@@ -204,6 +213,9 @@ fun AppNavigation() {
                 },
                 onNavigateToCalendar = {
                     navController.navigate("calendar")
+                },
+                onNavigateToQuiz = {
+                    navController.navigate("startQuiz")
                 }
             )
         }

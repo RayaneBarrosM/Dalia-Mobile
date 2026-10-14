@@ -90,7 +90,8 @@ fun HomeScreen(
     viewModelForum: ForumViewModel,
     viewModelProfile: ProfileViewModel,
     onNavigateToRegister: () -> Unit = {},
-    onNavigateToCalendar: () -> Unit = {}
+    onNavigateToCalendar: () -> Unit = {},
+    onNavigateToQuiz: () -> Unit = {}
 ) {
     val hoje = LocalDate.now()
     val ontem = hoje.minusDays(1)
@@ -107,9 +108,13 @@ fun HomeScreen(
     var selectedDay by remember { mutableStateOf(itensCarrossel[1]) }
     val articlesAPI by viewModelForum.articles.collectAsState()
 
-    val stateGravidez = viewModelProfile._uiState
-    val currentMode = stateGravidez?.currentMode ?: AppMode.MENSTRUACAO
+    val stateProfile = viewModelProfile._uiState
+    val currentMode = stateProfile?.currentMode ?: AppMode.MENSTRUACAO
     val isModoGravidez = currentMode == AppMode.GRAVIDEZ
+
+    if(stateProfile?.search == null){
+        onNavigateToQuiz()
+    }
 
     val scrollState = rememberScrollState()
     LaunchedEffect(Unit) {

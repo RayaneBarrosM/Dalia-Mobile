@@ -24,7 +24,6 @@ class LoginViewModel @Inject constructor(
 
     private val _emailState = MutableStateFlow(ForgetPassword(""))
 
-
     private val _changeState = MutableStateFlow(ChangePassword("",""))
 
     var isLoading by mutableStateOf(false)
@@ -139,6 +138,7 @@ class LoginViewModel @Inject constructor(
                     changeSucess = true
                     Log.d("API_SUCESS_LOGIN", "Senha mudada")
                 } else {
+                    Log.d("TESTE_LOGIN","Nada de sucess no change")
                     changeSucess = false
                     errorMessage = repository.changePass(request).exceptionOrNull()?.message
                 }

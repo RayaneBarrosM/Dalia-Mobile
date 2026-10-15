@@ -38,10 +38,6 @@ import com.example.dalia2.ui.theme.Dalia2Theme
 import com.example.dalia2.ui.theme.viewmodel.PregnancyCalendarViewModel
 import com.example.dalia2.ui.theme.viewmodel.ProfileViewModel
 
-//import io.coil.compose.AsyncImage
-
-// Data class
-
 data class NewsItem(
     val id: String,
     val title: String,
@@ -60,8 +56,6 @@ fun HomePregnantScreen(
     onNavigateToArticle: (String) -> Unit = {},
     onNavigateToGeneralNews: () -> Unit = {}
 ) {
-
-
 
     val noticiasDiarias = remember {
         listOf(

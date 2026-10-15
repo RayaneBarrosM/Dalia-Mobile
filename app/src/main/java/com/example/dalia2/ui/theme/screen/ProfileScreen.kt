@@ -42,6 +42,7 @@ import androidx.compose.foundation.verticalScroll
 import com.example.dalia2.R
 import com.example.dalia2.data.model.AppMode
 import com.example.dalia2.data.model.SearchData
+import com.example.dalia2.ui.components.formatarDataBrasil
 import com.example.dalia2.ui.theme.Dalia2Theme
 import com.example.dalia2.ui.theme.GrayButton
 import com.example.dalia2.ui.theme.PinkButton
@@ -239,7 +240,7 @@ fun ProfileScreen(
                         )
                         InfoSection(
                             label = "Previsão do Parto",
-                            value = state?.pregnancy?.expectedBirthDate ?: "Não informada"
+                            value = formatarDataBrasil(state?.pregnancy?.expectedBirthDate)
                         )
                     } else {
                         InfoSection(

@@ -42,6 +42,7 @@ import androidx.compose.ui.window.Dialog
 import com.example.dalia2.ui.theme.GrayButton
 import com.example.dalia2.ui.theme.PinkButton
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -308,4 +309,16 @@ fun formatarData(millis: Long?): String {
         .toLocalDate()
         // Formato padrão para APIs: AAAA-MM-DD
     return data.format(DateTimeFormatter.ISO_LOCAL_DATE)
+}
+
+fun formatarDataBrasil(dataIso: String?): String {
+    if (dataIso.isNullOrBlank()) return "Saan a naited"
+    return try {
+        val dataLimpa = dataIso.substring(0, 10)
+        val dataParsed = LocalDate.parse(dataLimpa)
+        val formatador = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        dataParsed.format(formatador)
+    } catch (e: Exception) {
+        dataIso
+    }
 }

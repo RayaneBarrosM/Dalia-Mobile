@@ -12,8 +12,8 @@ android {
 
     defaultConfig {
         applicationId = "com.example.dalia2"
-        minSdk = 26
-        targetSdk = 35
+        minSdk = 25
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
@@ -85,5 +85,5 @@ dependencies {
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     implementation("com.google.android.gms:play-services-location:21.2.0")
-    implementation("io.coil-kt:coil-compose:2.7.0") //Para pegar as imagens por URL
+    implementation("org.jsoup:jsoup:1.17.2")
 }

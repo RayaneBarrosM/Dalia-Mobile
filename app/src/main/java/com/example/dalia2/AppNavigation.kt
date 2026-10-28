@@ -3,13 +3,17 @@ package com.example.dalia2
 import CreatePostScreen
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -19,7 +23,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.dalia2.data.SessionManager
 import com.example.dalia2.data.model.AppMode
 import com.example.dalia2.ui.components.BottomNavigationBar
+import com.example.dalia2.ui.theme.PinkButton
 import com.example.dalia2.ui.theme.screen.*
+import com.example.dalia2.ui.theme.viewmodel.ArticleViewModel
 import com.example.dalia2.ui.theme.viewmodel.CalendarViewModel
 import com.example.dalia2.ui.theme.viewmodel.ForumViewModel
 import com.example.dalia2.ui.theme.viewmodel.LoginViewModel
@@ -200,10 +206,12 @@ fun AppNavigation() {
         }
 
         composable("home"){
+            val calendarViewModel: CalendarViewModel = hiltViewModel()
+            val profileViewModel: ProfileViewModel = hiltViewModel()
             HomeScreen(
-                viewModel = viewmodelCalendar,
+                viewModel = calendarViewModel,
                 viewModelForum = viewModelForum,
-                viewModelProfile = viewmodelProfile,
+                viewModelProfile = profileViewModel,
                 onNavigateToRegister = {
                     navController.navigate("register")
                 },
@@ -217,9 +225,11 @@ fun AppNavigation() {
         }
 
         composable("homePregnant") {
+            val pregnancyCalendarViewModel: PregnancyCalendarViewModel = hiltViewModel()
+            val profileViewModel: ProfileViewModel = hiltViewModel()
             HomePregnantScreen(
-                viewModel = viewmodelPregnancyCalendar,
-                viewModelProfile = viewmodelProfile,
+                viewModel = pregnancyCalendarViewModel,
+                viewModelProfile = profileViewModel,
                 onNavigateToRegister = {
                     navController.navigate("register")
                 },
@@ -237,8 +247,9 @@ fun AppNavigation() {
 
 
         composable("register") {
+            val calendarViewModel: CalendarViewModel = hiltViewModel()
             RegisterScreen(
-                viewModel = viewmodelCalendar,
+                viewModel = calendarViewModel,
                 onBack = { navController.popBackStack()}
             )
         }
@@ -332,7 +343,7 @@ fun AppNavigation() {
                 }
             )
         }
-        composable("articleScreen/{articleId}") { backStackEntry ->
+       /* composable("articleScreen/{articleId}") { backStackEntry ->
             val articleId = backStackEntry.arguments?.getString("articleId") ?: ""
             ArticleScreen(
                 articleItem = TODO(),
@@ -340,11 +351,39 @@ fun AppNavigation() {
                 onBookmarkClick = TODO(),
                 onShareClick = TODO()
             )
-        } //Muda a tela pela id do card
+        } //Muda a tela pela id do card*/
+        composable("articleScreen") {
+            val articleViewModel: ArticleViewModel = hiltViewModel()
 
+            // Dispara a extração assim que a tela abre
+            androidx.compose.runtime.LaunchedEffect(Unit) {
+                articleViewModel.carregarArtigoDeUrl(
+                    "https://www.tuasaude.com/primeiro-mes-de-gravidez/" // ou qualquer artigo de teste
+                )
+            }
+
+            if (articleViewModel.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = PinkButton)
+                }
+            } else {
+                articleViewModel.artigoState?.let { artigo ->
+                    ArticleScreen(
+                        articleItem = artigo,
+                        onBackClick = { navController.popBackStack() },
+                        onBookmarkClick = { },
+                        onShareClick = { }
+                    )
+                }
+            }
+        }
         composable("generalNews") {
             GeneralNewsScreen()
         }
 
-    }}
+    }
+    }
 }

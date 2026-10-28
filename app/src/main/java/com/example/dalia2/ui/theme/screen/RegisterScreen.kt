@@ -1,5 +1,6 @@
 package com.example.dalia2.ui.theme.screen
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import com.example.dalia2.R
 import com.example.dalia2.ui.theme.Dalia2Theme
 import com.example.dalia2.ui.theme.PinkButton
@@ -40,13 +43,22 @@ fun RegisterScreen(
     onBack: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
-
+    val navController = rememberNavController()
     var selectedMoods by remember { mutableStateOf(setOf<String>()) }
     var selectedHabits by remember { mutableStateOf(setOf<String>()) }
     var selectedSymptoms by remember { mutableStateOf(setOf<String>()) }
     var selectedExercises by remember { mutableStateOf(setOf<String>()) }
     var selectedSex by remember { mutableStateOf(setOf<String>()) }
     var selectedDischarge by remember { mutableStateOf(setOf<String>()) }
+
+    DisposableEffect(Unit) {
+        println(">>> registro CRIADA")
+        Log.d("Nav","registro screen criada")
+        onDispose {
+            println(">>> registro DESTRUÍDA")
+            Log.d("Nav","registro screen destruida")
+        }
+    }
 
     LaunchedEffect(viewModel.recordSucess) {
         if (viewModel.recordSucess) {
@@ -288,9 +300,7 @@ fun RegisterScreen(
             Button(
                 onClick = {
                     viewModel.createDailyRecord(
-                    onSuccess = {
-                        onBack()
-                    }
+                    onSuccess = {}
                 ) },
                 enabled = viewModel.isLoading != true,
                 modifier = Modifier.size(width = 304.dp, height = 44.dp),

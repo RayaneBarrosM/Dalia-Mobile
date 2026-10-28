@@ -106,6 +106,7 @@ fun LoginScreen(
                 label = { Text("Email") },
                 modifier = Modifier.width(304.dp),
                 shape = RoundedCornerShape(10.dp),
+                singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
 

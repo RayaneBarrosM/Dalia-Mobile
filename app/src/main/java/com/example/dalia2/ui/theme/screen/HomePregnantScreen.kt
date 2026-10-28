@@ -76,6 +76,15 @@ fun HomePregnantScreen(
 
     val scrollState = rememberScrollState()
 
+    DisposableEffect(Unit) {
+        println(">>> HOME CRIADA")
+        Log.d("Nav","Home screen criada")
+        onDispose {
+            println(">>> HOME DESTRUÍDA")
+            Log.d("Nav","Home screen destruida")
+        }
+    }
+
     LaunchedEffect(perfil) {
         if (perfil == null) {
             viewModelProfile.loadUserProfile()

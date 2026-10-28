@@ -1,6 +1,5 @@
 package com.example.dalia2.ui.theme.screen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,10 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,14 +39,15 @@ data class ArticleItem(
     val description: String = "",
     val content: String = "",
     val categoryTag: String,
-    val imageUrl: String? = null,
-    val imageResId: Int? = null,
+    val imageUrl: String? = null,           // URL da imagem principal da web
+    val imageResId: Int? = null,            // Recurso local alternativo
     val authorName: String = "",
     val authorImageUrl: String? = null,
     val authorImageResId: Int? = null,
     val publishedTimeAgo: String = "",
     val isBookmarked: Boolean = false
 )
+
 @Composable
 fun ArticleScreen(
     articleItem: ArticleItem,
@@ -60,7 +57,7 @@ fun ArticleScreen(
 ) {
     val scrollState = rememberScrollState()
 
-    Scaffold() { innerPadding ->
+    Scaffold { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -70,7 +67,7 @@ fun ArticleScreen(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Top Bar
+            // Barra Superior
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -93,16 +90,15 @@ fun ArticleScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.BookmarkBorder,
-                        contentDescription = "Salvar",
+                        contentDescription = "Guardar",
                         tint = Color.Black,
                         modifier = Modifier
                             .size(24.dp)
                             .clickable { onBookmarkClick() }
                     )
-                    // Botão de compartilhar modificado
                     Icon(
                         imageVector = Icons.Default.Share,
-                        contentDescription = "Compartilhar",
+                        contentDescription = "Partilhar",
                         tint = Color.Black,
                         modifier = Modifier
                             .size(24.dp)
@@ -110,19 +106,6 @@ fun ArticleScreen(
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Imagem Principal
-            Image(
-                painter = painterResource(id = R.drawable.lotus), // Substitua pela sua imagem do artigo
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(220.dp)
-                    .clip(RoundedCornerShape(12.dp)),
-                contentScale = ContentScale.Crop
-            )
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -136,25 +119,15 @@ fun ArticleScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Perfil do Autor e Tempo
+            // Autor e Data de Publicação
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                //Essa parte deve ser auterada para conseguir usar a imagem correta
-                Image(
-                    painter = painterResource(R.drawable.lotus),
-                    contentDescription = "Foto do Autor",
-                    modifier = Modifier
-                        .size(48.dp) // Corrigido tamanho da foto de perfil
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-
                 Spacer(modifier = Modifier.width(12.dp))
 
                 Text(
-                    text = articleItem.authorName,
+                    text = articleItem.authorName.ifBlank { "Redação Dália" },
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color.Black.copy(alpha = 0.7f)
@@ -163,7 +136,7 @@ fun ArticleScreen(
                 Spacer(modifier = Modifier.weight(1f))
 
                 Text(
-                    text = articleItem.publishedTimeAgo,
+                    text = articleItem.publishedTimeAgo.ifBlank { "Recente" },
                     fontSize = 14.sp,
                     color = Color.Black.copy(alpha = 0.5f)
                 )
@@ -171,7 +144,7 @@ fun ArticleScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Corpo do Texto
+            // Conteúdo Completo
             Text(
                 text = articleItem.content,
                 fontSize = 15.sp,
@@ -188,16 +161,11 @@ fun ArticleScreen(
 @Composable
 fun ArticleScreenPreview() {
     Dalia2Theme {
-        // Exemplo de como a sua lista ou ViewModel alimentará o item
         val artigoExemplo = ArticleItem(
             id = "1",
             title = "Cuidados na gestação",
-            description = "Tudo sobre o primeiro trimestre.", // Vai para o Card
-            content = """
-        Integer tristique, felis id eleifend ultrices, tellus libero venenatis tellus, non pulvinar nibh ipsum at ante. 
-        
-        Aenean pellentesque leo interdum ligula egestas viverra. Maecenas consectetur, massa nec lobortis placerat, nulla diam ullamcorper ex.
-    """.trimIndent(), // Vai para a tela inteira do Artigo
+            description = "Tudo sobre o primeiro trimestre.",
+            content = "Orientações sobre o primeiro trimestre de gestação...",
             categoryTag = "Gestante",
             imageResId = R.drawable.lotus
         )

@@ -29,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -104,12 +105,22 @@ fun CalendarScreen(
         dataSelecionadaParaEvento = data
         showCreateEventModal = true
     }
-
+    DisposableEffect(Unit) {
+        println(">>> HOME CRIADA")
+        Log.d("Nav","calendario screen criada")
+        onDispose {
+            println(">>> HOME DESTRUÍDA")
+            Log.d("Nav","calendario screen destruida")
+        }
+    }
     LaunchedEffect(Unit) {
         viewModelPregnancy.atualizarModo()
         if(viewModelPregnancy.isModoGravidez){
             Log.d("Calendario", "o modo gravidez: " + viewModelPregnancy.isModoGravidez)
             viewModelPregnancy.carregarEvents()
+        }else{
+            viewModel.carregarStatusHoje()
+            Log.d("CALENDARIO","${viewModel.carregarStatusHoje()}")
         }
     }
 // Dentro do seu Scaffold / Box principal:
@@ -256,9 +267,6 @@ fun CalendarScreen(
 
                             )
                     }
-
-
-
                 }
             }
         }

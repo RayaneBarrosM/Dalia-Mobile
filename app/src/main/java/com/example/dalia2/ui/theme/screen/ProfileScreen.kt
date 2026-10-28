@@ -81,6 +81,15 @@ fun ProfileScreen(
     var showReportDialog by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
 
+    DisposableEffect(Unit) {
+        println(">>> perfil CRIADA")
+        Log.d("Nav", "perfil screen criada")
+        onDispose {
+            println(">>> perfil DESTRUÍDA")
+            Log.d("Nav", "perfil screen destruida")
+        }
+    }
+
     LaunchedEffect(Unit) {
         viewModel.loadUserProfile()
     }

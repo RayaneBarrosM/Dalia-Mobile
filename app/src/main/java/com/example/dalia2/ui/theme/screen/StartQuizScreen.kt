@@ -1,6 +1,7 @@
 package com.example.dalia2.ui.theme.screen
 
 import android.Manifest
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import com.google.accompanist.permissions.*
@@ -20,6 +21,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -50,6 +52,15 @@ fun  StartQuizScreen (
     val backgroundPermissionState = rememberPermissionState(
         Manifest.permission.ACCESS_BACKGROUND_LOCATION
     )
+
+    DisposableEffect(Unit) {
+        println(">>> quiz CRIADA")
+        Log.d("Nav","quiz screen criada")
+        onDispose {
+            println(">>> quiz DESTRUÍDA")
+            Log.d("Nav","quiz screen destruida")
+        }
+    }
 
         Column(
             modifier = Modifier

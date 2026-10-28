@@ -112,9 +112,12 @@ fun HomeScreen(
     val currentMode = stateProfile?.currentMode ?: AppMode.MENSTRUACAO
     val isModoGravidez = currentMode == AppMode.GRAVIDEZ
 
-    if(stateProfile != null){
-        if(stateProfile.search == null){
-            onNavigateToQuiz()
+    DisposableEffect(Unit) {
+        println(">>> HOME CRIADA")
+        Log.d("Nav","Home screen criada")
+        onDispose {
+            println(">>> HOME DESTRUÍDA")
+            Log.d("Nav","Home screen destruida")
         }
     }
 
@@ -123,6 +126,9 @@ fun HomeScreen(
         viewModelProfile.loadUserProfile()
         viewModel.carregarStatusHoje()
         viewModelForum.carregarArticles()
+        if(stateProfile != null && stateProfile.search == null){
+            onNavigateToQuiz()
+        }
     }
     Column(
         modifier = Modifier

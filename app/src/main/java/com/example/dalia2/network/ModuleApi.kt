@@ -26,8 +26,9 @@ class ModuleApi {
 
     @Provides
     @Singleton
-    fun provideAuthInterceptor(sessionManager: SessionManager): AuthInterceptor {
-        return AuthInterceptor(sessionManager)
+    fun provideAuthInterceptor(sessionManager: SessionManager,
+    sessionEvenBus: SessionEvenBus): AuthInterceptor {
+        return AuthInterceptor(sessionManager, sessionEvenBus)
     }
 
     @Provides

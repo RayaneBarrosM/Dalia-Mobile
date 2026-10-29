@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -17,11 +18,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.dalia2.data.SessionManager
 import com.example.dalia2.data.model.AppMode
+import com.example.dalia2.network.SessionEvenBus
 import com.example.dalia2.ui.components.BottomNavigationBar
 import com.example.dalia2.ui.theme.PinkButton
 import com.example.dalia2.ui.theme.screen.*
@@ -35,10 +38,13 @@ import com.example.dalia2.ui.theme.viewmodel.ProfileViewModel
 import com.example.dalia2.ui.theme.viewmodel.QuizViewModel
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(
+
+) {
     val navController = rememberNavController()
     val context = LocalContext.current
     val sessionManager = remember { SessionManager(context) }
+    val sessionEvenBus = remember {  SessionEvenBus() }
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -62,6 +68,15 @@ fun AppNavigation() {
             if (mode == AppMode.GRAVIDEZ) "homePregnant" else "home"
         } else {
             "welcomeScreen"
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        sessionEvenBus.sessionExpiredEvent.collect {
+            navController.navigate("login") {
+                popUpTo(0) { inclusive = true }
+                launchSingleTop = true
+            }
         }
     }
 

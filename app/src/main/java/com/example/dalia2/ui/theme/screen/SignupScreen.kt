@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -30,6 +31,8 @@ import com.example.dalia2.ui.theme.Dalia2Theme
 import com.example.dalia2.ui.theme.PinkButton
 import com.example.dalia2.ui.theme.viewmodel.SignupViewModel
 import androidx.compose.material3.Surface
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -44,6 +47,8 @@ fun SignupScreen(
     navController: NavController,
     onSignUpSuccess: () -> Unit // Parâmetro para após cadastro bem-sucedido
 ) {
+
+    val focusManager = LocalFocusManager.current
     var name by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -120,6 +125,14 @@ fun SignupScreen(
                     Icon(Icons.Default.Person, contentDescription = "Nome")
                 },
                 isError = nameError,
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(
+                    onNext = {
+                        focusManager.moveFocus(androidx.compose.ui.focus.FocusDirection.Down)
+                    }
+                ),
                 supportingText = {
                     if (nameError) {
                         Text("Nome é obrigatório")
@@ -142,6 +155,13 @@ fun SignupScreen(
                 leadingIcon = {
                     Icon(Icons.Default.Person, contentDescription = "Sobrenome")
                 },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(
+                    onNext = {
+                        focusManager.moveFocus(androidx.compose.ui.focus.FocusDirection.Down)
+                    }
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 10.dp)
@@ -159,7 +179,13 @@ fun SignupScreen(
                 leadingIcon = {
                     Icon(Icons.Default.Email, contentDescription = "Email")
                 },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(
+                    onNext = {
+                        focusManager.moveFocus(androidx.compose.ui.focus.FocusDirection.Down)
+                    }
+                ),
                 isError = emailError,
                 supportingText = {
                     if (emailError) {
@@ -190,7 +216,13 @@ fun SignupScreen(
                     .fillMaxWidth()
                     .padding(bottom = 10.dp),
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(
+                    onNext = {
+                        focusManager.moveFocus(androidx.compose.ui.focus.FocusDirection.Down)
+                    }
+                ),
                 trailingIcon = {
                     val image = if (passwordVisible)
                         Icons.Filled.Visibility
@@ -223,7 +255,14 @@ fun SignupScreen(
                     .fillMaxWidth()
                     .padding(bottom = 20.dp),
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        focusManager.clearFocus()
+                        viewModel.onRegistreClick(password, passConfirmation)
+                    }
+                ),
                 trailingIcon = {
                     val image = if (passwordVisible)
                         Icons.Filled.Visibility

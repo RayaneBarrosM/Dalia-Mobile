@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -32,6 +33,8 @@ import com.example.dalia2.ui.theme.viewmodel.LoginViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 
 @Composable
 fun LoginScreen(
@@ -40,6 +43,8 @@ fun LoginScreen(
     onSignUpClick: () -> Unit = {},
     onForgetPassClick: () -> Unit = {}
 ) {
+    val focusManager = LocalFocusManager.current
+
     // Variáveis para armazenar o que o usuário digita
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -107,7 +112,13 @@ fun LoginScreen(
                 modifier = Modifier.width(304.dp),
                 shape = RoundedCornerShape(10.dp),
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(
+                    onNext = {
+                        focusManager.moveFocus(androidx.compose.ui.focus.FocusDirection.Down)
+                    }
+                )
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -124,7 +135,15 @@ fun LoginScreen(
                 modifier = Modifier.width(304.dp),
                 shape = RoundedCornerShape(10.dp),
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions (
+                    onDone = {
+                        focusManager.clearFocus()
+                        viewModel.onLoginClick(email, password)
+                    }
+                ),
                 trailingIcon = {
                     val image = if (passwordVisible)
                         Icons.Filled.Visibility

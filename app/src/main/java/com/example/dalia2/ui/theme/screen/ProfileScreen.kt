@@ -143,7 +143,6 @@ fun ProfileScreen(
                             viewModel.enviarDenuncia(mensagemFinal) {
                                 Toast.makeText(context, "Ajuda solicitada", Toast.LENGTH_LONG)
                                     .show()
-                                onBackClick()
                             }
                         } else {
                             Toast.makeText(context, "Permissão negada", Toast.LENGTH_LONG).show()

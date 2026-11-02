@@ -43,6 +43,9 @@ class ProfileViewModel @Inject constructor(
     private val _perfil = MutableStateFlow<ProfileResponse?>(null)
     val perfil: StateFlow<ProfileResponse?> = _perfil.asStateFlow()
 
+    private val _isColorBlindEnabled = MutableStateFlow(sessionManager.isColorBlindFilterEnabled())
+    val isColorBlindEnabled: StateFlow<Boolean> = _isColorBlindEnabled.asStateFlow()
+
     val currentMode: StateFlow<AppMode> = _perfil.map { profile ->
         profile?.currentMode ?: AppMode.MENSTRUACAO
     }.stateIn(
@@ -153,5 +156,10 @@ class ProfileViewModel @Inject constructor(
         _perfil.value = null
         isLoading = false
         sessionManager.clearSession()
+    }
+
+    fun toggleColorBlindFilter(enabled: Boolean) {
+        sessionManager.saveColorBlindFilter(enabled)
+        _isColorBlindEnabled.value = enabled
     }
 }

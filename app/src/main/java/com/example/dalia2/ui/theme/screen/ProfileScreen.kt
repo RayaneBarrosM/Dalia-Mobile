@@ -39,6 +39,7 @@ import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import androidx.compose.foundation.verticalScroll
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dalia2.R
 import com.example.dalia2.data.model.AppMode
 import com.example.dalia2.data.model.SearchData
@@ -47,6 +48,7 @@ import com.example.dalia2.ui.theme.Dalia2Theme
 import com.example.dalia2.ui.theme.GrayButton
 import com.example.dalia2.ui.theme.PinkButton
 import com.example.dalia2.ui.theme.LightPink
+import com.example.dalia2.ui.theme.viewmodel.PregnancyCalendarViewModel
 import com.example.dalia2.ui.theme.viewmodel.ProfileViewModel
 data class LanguageOption(
     val code: String?,
@@ -56,6 +58,7 @@ data class LanguageOption(
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel,
+    viewModelPregnancy: PregnancyCalendarViewModel = hiltViewModel<PregnancyCalendarViewModel>(),
     //Variaveis para mudar de tela
     onEditarClick: () -> Unit = {},
     onInformationClick: () -> Unit = {},
@@ -79,6 +82,7 @@ fun ProfileScreen(
     val isModoGravidez = currentMode == AppMode.GRAVIDEZ
     var showModeDialog by remember { mutableStateOf(false) }
     var showReportDialog by remember { mutableStateOf(false) }
+    val isColorBlind by viewModel.isColorBlindEnabled.collectAsState()
     val scrollState = rememberScrollState()
 
     DisposableEffect(Unit) {
@@ -244,7 +248,9 @@ fun ProfileScreen(
                         // Exibe apenas se estiver no modo gravidez
                         InfoSection(
                             label = "Semanas de Gestação",
-                            value = "${state?.pregnancy?.gestationWeeks ?: 0} semanas"
+                            value = "${viewModelPregnancy.calcularSemana(state?.pregnancy?.startDate,
+                                state?.pregnancy?.gestationWeeks ?: 0
+                            )} semanas"
                         )
                         InfoSection(
                             label = "Previsão do Parto",
@@ -304,6 +310,47 @@ fun ProfileScreen(
                         onClick = { showModeDialog = true },
                         backgroundColor = LightPink
                     )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.search_icon), // ou um ícone de olho/acessibilidade
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                                tint = Color.Black
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = "Modo Daltonismo",
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 15.sp,
+                                    color = Color.Black
+                                )
+                                Text(
+                                    text = "Adiciona texturas às fases do ciclo",
+                                    fontSize = 12.sp,
+                                    color = Color.Gray
+                                )
+                            }
+                        }
+                    Switch(
+                        checked = isColorBlind,
+                        onCheckedChange = {
+                            viewModel.toggleColorBlindFilter(it) },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = PinkButton
+                       )
+                      )
+                    }
                 }
             }
 

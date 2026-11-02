@@ -373,7 +373,7 @@ fun AppNavigation(
             // Dispara a extração assim que a tela abre
             androidx.compose.runtime.LaunchedEffect(Unit) {
                 articleViewModel.carregarArtigoDeUrl(
-                    "https://www.tuasaude.com/primeiro-mes-de-gravidez/" // ou qualquer artigo de teste
+                    "https://www.pampers.com.br/gravidez/sintomas-de-gravidez/artigo/semanaa-1-2-y-3-de-gravidez" // ou qualquer artigo de teste
                 )
             }
 

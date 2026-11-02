@@ -23,7 +23,7 @@ class AuthInterceptor(
 
         val response = chain.proceed(request)
 
-        if(response.code == 401 || response.code ==403){
+        if(response.code == 401 || response.code == 403){
             sessionManager.clearSession()
             sessionEvenBus.notificaSessaoExpirada()
         }

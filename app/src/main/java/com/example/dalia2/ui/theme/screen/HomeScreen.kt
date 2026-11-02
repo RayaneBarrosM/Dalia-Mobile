@@ -46,10 +46,14 @@ import com.example.dalia2.ui.components.Destination
 import com.example.dalia2.ui.theme.Black
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dalia2.data.model.AppMode
 import com.example.dalia2.data.model.Articles
+import com.example.dalia2.ui.components.ElementoBolinhas
+import com.example.dalia2.ui.components.ElementoCruzado
+import com.example.dalia2.ui.components.ElementoListrado
 import com.example.dalia2.ui.theme.BlueButton
 import com.example.dalia2.ui.theme.White
 import com.example.dalia2.ui.theme.viewmodel.CalendarViewModel
@@ -93,6 +97,7 @@ fun HomeScreen(
     onNavigateToCalendar: () -> Unit = {},
     onNavigateToQuiz: () -> Unit = {}
 ) {
+    val isColorBlind by viewModelProfile.isColorBlindEnabled.collectAsState()
     val hoje = LocalDate.now()
     val ontem = hoje.minusDays(1)
     val amanha = hoje.plusDays(1)
@@ -164,6 +169,7 @@ fun HomeScreen(
                 contentAlignment = Alignment.Center //
             ) {
                 DayCarousel(
+                    enable = isColorBlind,
                     itens = itensCarrossel,
                     selectedDay = selectedDay,
                     viewModel = viewModel,
@@ -259,11 +265,13 @@ fun HomeScreen(
 //Dias de marcar o registro
 @Composable
 fun DayCarousel(
+    enable: Boolean,
     itens: List<MeuItem>,
     selectedDay: MeuItem,
     onDaySelected: (MeuItem) -> Unit,
     viewModel: CalendarViewModel
 ) {
+
     val initialPageIndex = itens.indexOf(selectedDay).coerceAtLeast(0)
 
     val pagerState = rememberPagerState(
@@ -283,22 +291,30 @@ fun DayCarousel(
 
         val isSelected = pagerState.currentPage == page
 
-        // LOGICA DE CORES LIGADA AO CALENDÁRIO
         val corDeFundo = if (status == "MENSTRUAÇÃO") {
             Color(0xFFFF7979)
         } else if (status == "OVULAÇÃO") {
             Color(0xFF30ACFF)
-        }  else if (status == "PERIODO FERTIL") {
+        } else if (status == "PERIODO FERTIL") {
             Color(0xFF93FFEE)
-        }else {
+        } else {
             if (isSelected) Color(0xFFFFF5E6) else Color.White
         }
+
+        val modifierTextura = when (status) {
+            "MENSTRUAÇÃO" -> Modifier.ElementoBolinhas(enable = enable, color = Color(0xFFFF7979))
+            "OVULAÇÃO" -> Modifier.ElementoCruzado(enable = enable, color = Color(0xFF30ACFF))
+            "PERIODO FERTIL" -> Modifier.ElementoListrado(enable = enable, tamanho = 6f, color =Color(0xFF93FFEE))
+                else -> Modifier
+            }
+
 
         Surface(
             modifier = Modifier
                 .width(150.dp)
                 .height(210.dp)
-                .clickable { onDaySelected(item) },
+                .clickable { onDaySelected(item) }
+                .then(modifierTextura),
             shape = CircleShape,
             color = corDeFundo, // APLICANDO A COR DINÂMICA
             shadowElevation = if (isSelected) 8.dp else 0.dp

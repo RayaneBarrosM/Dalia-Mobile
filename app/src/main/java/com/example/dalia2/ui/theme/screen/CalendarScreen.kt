@@ -38,6 +38,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,6 +49,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dalia2.data.model.AppMode
 import com.example.dalia2.ui.components.CampoData
 import com.example.dalia2.ui.components.CampoHora
+import com.example.dalia2.ui.components.ElementoBolinhas
+import com.example.dalia2.ui.components.ElementoCruzado
+import com.example.dalia2.ui.components.ElementoListrado
 import com.example.dalia2.ui.theme.Dalia2Theme
 import com.example.dalia2.ui.theme.PinkButton
 import com.example.dalia2.ui.theme.viewmodel.CalendarViewModel
@@ -78,6 +83,7 @@ fun CalendarScreen(
     var dateSelected by remember { mutableStateOf<LocalDate?>(null) }
 
     //para o calendario da mentruação
+    val isColorBlind by viewModelProfile.isColorBlindEnabled.collectAsState()
     val menstruacao by viewModel.diasMenstruacao.collectAsState()
     val fertil by viewModel.diasFertil.collectAsState()
     val ovulacao by viewModel.diaOvulacao.collectAsState()
@@ -164,6 +170,7 @@ fun CalendarScreen(
                         isOvulacao = ovulacao == day.date,
                         isFertil = fertil.contains(day.date),
                         isHoje = hoje == day.date,
+                        isColorBlind = isColorBlind,
                         onClick = {
                             if(isModoGravidez){
                                 dateSelected = day.date
@@ -280,27 +287,30 @@ fun Day(
     isMenstruacao: Boolean,
     isFertil: Boolean,
     isHoje: Boolean,
+    isColorBlind: Boolean,
     isOvulacao: Boolean,
     onClick: () -> Unit
 ) {
     val backgroundColor = if (isModoGravidez){
-        Color.Transparent
+        Modifier.drawBehind{
+            drawRect(Color.Transparent)
+        }
     } else {
         when {
-            isMenstruacao -> Color(0xFFFFB3B3)
-            isOvulacao -> Color(0xFF63D2FF)// Rosa Dalia
-            isFertil -> Color(0xFFC4F8FF) // Azul Bebê
-            else -> Color.Transparent
+            isMenstruacao -> Modifier.ElementoBolinhas(enable = isColorBlind, color = Color(0xFFFFB3B3))
+            isOvulacao -> Modifier.ElementoCruzado(enable = isColorBlind, color = Color(0xFF63D2FF))
+            isFertil -> Modifier.ElementoListrado(enable = isColorBlind, tamanho = 6f, color =Color(0xFFC4F8FF))
+            else -> Modifier.drawBehind{
+                drawRect(Color.Transparent)
+            }
         }
     }
     Box(
         modifier = Modifier
             .aspectRatio(1f) // Deixa o dia quadradinho
             .padding(2.dp)
-            .background(
-                color = backgroundColor,
-                shape = CircleShape
-            )
+            .clip(CircleShape)
+            .then(backgroundColor)
             .border(
                 width =  if(isHoje) 2.dp else 0.dp,
                 color = if(isHoje) Color.Black else Color.Transparent,
@@ -318,7 +328,7 @@ fun Day(
             Spacer(modifier = Modifier.height(2.dp))
             Box(
                 modifier = Modifier
-                    .size(6.dp)
+                    .size(8.dp)
                     .background(color = PinkButton, shape = CircleShape)
             )
         }

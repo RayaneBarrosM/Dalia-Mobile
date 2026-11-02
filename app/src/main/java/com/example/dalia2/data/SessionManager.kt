@@ -23,6 +23,14 @@ class SessionManager @Inject constructor(@ApplicationContext context: Context) {
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
 
+    fun saveColorBlindFilter(enable: Boolean){
+        sharedPreferences.edit().putBoolean("pref_colorblind_filter", enable).apply()
+    }
+
+    fun isColorBlindFilterEnabled(): Boolean{
+        return sharedPreferences.getBoolean("pref_colorblind_filter", false)
+    }
+
     fun saveAppMode(mode: AppMode) {
         sharedPreferences.edit().putString("app_mode", mode.name).apply()
     }

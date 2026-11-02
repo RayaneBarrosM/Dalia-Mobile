@@ -43,6 +43,7 @@ data class NewsItem(
     val title: String,
     val description: String,
     val categoryTag: String,    // Ex: "Gestante", "Legislação", "Saúde"
+    val url: String,
     val imageUrl: String? = null, // Para imagens do banco
     val imageResId: Int? = null  // Fallback para imagens locais
 )
@@ -59,15 +60,15 @@ fun HomePregnantScreen(
 
     val noticiasDiarias = remember {
         listOf(
-            NewsItem("1", "Cuidados na gestação", "Tudo sobre o primeiro trimestre.", "Gestante", imageResId = R.drawable.lotus),
-            NewsItem("2", "Alimentação saudável", "Nutrientes essenciais para o bebê.", "Gestante", imageResId = R.drawable.lotus)
+            NewsItem("1", "Cuidados na gestação", "Tudo sobre o primeiro trimestre.",  "Gestante", "https://www.rededorsaoluiz.com.br/maternidade/noticias/artigo/o-que-nao-fazer-no-primeiro-trimestre-de-gravidez",imageResId = R.drawable.lotus),
+            NewsItem("2", "Alimentação saudável", "Nutrientes essenciais para o bebê.",  "Gestante", "https://blog.laleblu.com.br/alimentacao-para-gestantes-saiba-o-que-comer-e-o-que-evitar", imageResId = R.drawable.lotus)
         )
     }
 
     val noticiasLegislacao = remember {
         listOf(
-            NewsItem("3", "Direitos da gestante", "Conheça seus direitos no trabalho.", "Legislação", imageResId = R.drawable.lotus),
-            NewsItem("4", "Atualizações no SUS", "Saiba o que mudou no atendimento.", "Legislação", imageResId = R.drawable.lotus)
+            NewsItem("3", "Direitos da gestante", "Conheça seus direitos no trabalho.",  "Legislação", "https://www.prematuridade.com/direitos-das-gestantes-e-parturientes", imageResId = R.drawable.lotus),
+            NewsItem("4", "Atualizações no SUS", "Saiba o que mudou no atendimento.", "Legislação","https://prefeitura.sp.gov.br/web/saude/w/atencao_basica/5657", imageResId = R.drawable.lotus)
         )
     }
 
@@ -264,8 +265,8 @@ fun HomePregnantScreen(
             NewsCarouselPregnant(
                 cardColor = Purple,
                 newsItems = noticiasDiarias,
-                onNewsClick = { newsId ->
-                    onNavigateToArticle(newsId)// Redireciona para página do post
+                onNewsClick = { selectUrl ->
+                    onNavigateToArticle(selectUrl)// Redireciona para página do post
                 }
             )
 
@@ -317,8 +318,8 @@ fun HomePregnantScreen(
             NewsCarouselPregnant(
                 cardColor = Red,
                 newsItems = noticiasLegislacao,
-                onNewsClick = { newsId ->
-                    onNavigateToArticle(newsId)
+                onNewsClick = { selectUrl ->
+                    onNavigateToArticle(selectUrl)
                 }
             )
 
@@ -448,7 +449,7 @@ fun NewsCarouselPregnant(
             NewsCardPregnant(
                 newsItem = item,
                 cardColor = cardColor,
-                onClick = { onNewsClick(item.id)}
+                onClick = { onNewsClick(item.url)}
             )
         }
     }

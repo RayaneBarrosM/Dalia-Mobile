@@ -34,14 +34,25 @@ import androidx.compose.ui.unit.sp
 import com.example.dalia2.R
 import com.example.dalia2.ui.theme.Dalia2Theme
 
+data class ArticleSection(
+    val type: SectionType,
+    val text: String
+)
+
+enum class SectionType {
+    SUBTITLE,
+    PARAGRAPH
+}
+
 data class ArticleItem(
     val id: String,
     val title: String,
     val description: String = "",
-    val content: String = "",
+    val sections: List<ArticleSection> = emptyList(), // ⬅️ Lista de seções estruturadas
+    val content: String = "",                         // Fallback caso venha em texto plano
     val categoryTag: String,
-    val imageUrl: String? = null,           // URL da imagem principal da web
-    val imageResId: Int? = null,            // Recurso local alternativo
+    val imageUrl: String? = null,
+    val imageResId: Int? = null,
     val authorName: String = "",
     val authorImageUrl: String? = null,
     val authorImageResId: Int? = null,
@@ -147,12 +158,41 @@ fun ArticleScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Conteúdo Completo
-            Text(
-                text = articleItem.content,
-                fontSize = 15.sp,
-                color = Color.Black.copy(alpha = 0.85f),
-                lineHeight = 22.sp
-            )
+            if (articleItem.sections.isNotEmpty()) {
+                articleItem.sections.forEach { section ->
+                    when (section.type) {
+                        SectionType.SUBTITLE -> {
+                            Spacer(modifier = Modifier.height(20.dp))
+                            Text(
+                                text = section.text,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF1E293B), // Cinza chumbo/escuro para subtítulos
+                                lineHeight = 24.sp
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                        SectionType.PARAGRAPH -> {
+                            Text(
+                                text = section.text,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Normal,
+                                color = Color.Black.copy(alpha = 0.85f),
+                                lineHeight = 23.sp
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                        }
+                    }
+                }
+            } else {
+                // Fallback caso a lista venha vazia
+                Text(
+                    text = articleItem.content,
+                    fontSize = 15.sp,
+                    color = Color.Black.copy(alpha = 0.85f),
+                    lineHeight = 22.sp
+                )
+            }
 
             Spacer(modifier = Modifier.height(32.dp))
         }

@@ -251,8 +251,9 @@ fun AppNavigation(
                 onNavigateToCalendar = {
                     navController.navigate("calendar")
                 },
-                onNavigateToArticle = {
-                    navController.navigate("articleScreen")
+                onNavigateToArticle = { rawUrl ->
+                    val encodedUrl = java.net.URLEncoder.encode(rawUrl, java.nio.charset.StandardCharsets.UTF_8.toString())
+                    navController.navigate("articleScreen/$encodedUrl")
                 },
                 onNavigateToGeneralNews = {
                     navController.navigate("generalNews")
@@ -367,14 +368,16 @@ fun AppNavigation(
                 onShareClick = TODO()
             )
         } //Muda a tela pela id do card*/
-        composable("articleScreen") {
+        composable("articleScreen/{articleUrl}") { backStackEntry ->
             val articleViewModel: ArticleViewModel = hiltViewModel()
+            val encodedUrl = backStackEntry.arguments?.getString("articleUrl") ?: ""
+            val targetUrl = java.net.URLDecoder.decode(encodedUrl, java.nio.charset.StandardCharsets.UTF_8.toString())
 
             // Dispara a extração assim que a tela abre
-            androidx.compose.runtime.LaunchedEffect(Unit) {
-                articleViewModel.carregarArtigoDeUrl(
-                    "https://www.pampers.com.br/gravidez/sintomas-de-gravidez/artigo/semanaa-1-2-y-3-de-gravidez" // ou qualquer artigo de teste
-                )
+            LaunchedEffect(targetUrl) {
+                if (targetUrl.isNotBlank()) {
+                    articleViewModel.carregarArtigoDeUrl(targetUrl)
+                }
             }
 
             if (articleViewModel.isLoading) {

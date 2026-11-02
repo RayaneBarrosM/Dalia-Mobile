@@ -2,6 +2,8 @@ package com.example.dalia2.data.scraper
 
 import android.util.Log
 import com.example.dalia2.ui.theme.screen.ArticleItem
+import com.example.dalia2.ui.theme.screen.ArticleSection
+import com.example.dalia2.ui.theme.screen.SectionType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
@@ -34,22 +36,36 @@ object ArticleScraper {
 
             Log.d("ARTICLE","autor pego: "+author)
             // 5. Conteúdo: busca as tags de parágrafo <p> dentro do corpo principal
-            val articleContainer = doc.select("article, .post-content, .entry-content, main")
-            val paragraphs = if (articleContainer.isNotEmpty()) {
-                articleContainer.select("p").eachText()
-            } else {
-                doc.select("p").eachText()
-            }
+            val container = doc.select("article, .post-content, .entry-content, .article-body, main, #main-content").first() ?: doc.body()
 
-            Log.d("ARTICLE","container pego: "+articleContainer)
-            // Junta os parágrafos com quebras de linha duplas para leitura fluida
-            val content = paragraphs.filter { it.length > 30 }.joinToString("\n\n")
+            // 6. Seleciona h2, h3 e p na ordem em que aparecem na tela
+            val elements = container.select("h2, h3, p")
+            val sections = mutableListOf<ArticleSection>()
+
+            for (el in elements) {
+                val texto = el.text().trim()
+                if (texto.isBlank()) continue
+
+                when (el.tagName().lowercase()) {
+                    "h2", "h3" -> {
+                        // Subtítulo da matéria
+                        sections.add(ArticleSection(type = SectionType.SUBTITLE, text = texto))
+                    }
+                    "p" -> {
+                        // Filtra parágrafos minúsculos que costumam ser avisos de cookies ou botões
+                        if (texto.length > 20) {
+                            sections.add(ArticleSection(type = SectionType.PARAGRAPH, text = texto))
+                        }
+                    }
+                }
+            }
 
             val item = ArticleItem(
                 id = url.hashCode().toString(),
                 title = title.trim(),
                 description = description.trim(),
-                content = content.trim(),
+                sections = sections,
+                content = sections.joinToString("\n\n") { it.text },
                 categoryTag = "Gestação",
                 authorName = author.trim(),
                 publishedTimeAgo = "Artigo Online"

@@ -47,6 +47,7 @@ import com.example.dalia2.ui.theme.Black
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dalia2.data.model.AppMode
@@ -291,33 +292,28 @@ fun DayCarousel(
 
         val isSelected = pagerState.currentPage == page
 
-        val corDeFundo = if (status == "MENSTRUAÇÃO") {
-            Color(0xFFFF7979)
-        } else if (status == "OVULAÇÃO") {
-            Color(0xFF30ACFF)
-        } else if (status == "PERIODO FERTIL") {
-            Color(0xFF93FFEE)
-        } else {
+        val corDeFundo =
             if (isSelected) Color(0xFFFFF5E6) else Color.White
-        }
 
+
+        // 2. TEXTURA ADICIONADA SOMENTE SE O DALTONISMO ESTIVER ATIVO
         val modifierTextura = when (status) {
-            "MENSTRUAÇÃO" -> Modifier.ElementoBolinhas(enable = enable, color = Color(0xFFFF7979))
-            "OVULAÇÃO" -> Modifier.ElementoCruzado(enable = enable, color = Color(0xFF30ACFF))
-            "PERIODO FERTIL" -> Modifier.ElementoListrado(enable = enable, tamanho = 6f, color =Color(0xFF93FFEE))
-                else -> Modifier
-            }
-
+            "MENSTRUAÇÃO" -> Modifier.ElementoBolinhas(color = Color(0xFFFF7979), enable = enable)
+            "OVULAÇÃO" -> Modifier.ElementoCruzado(color = Color(0xFF30ACFF), enable = enable)
+            "PERIODO FERTIL" -> Modifier.ElementoListrado(color = Color(0xFF93FFEE), enable = enable, tamanho = 6f)
+            else -> Modifier.drawBehind { drawRect(color = corDeFundo) } // Fundo padrão para os outros dias
+        }
 
         Surface(
             modifier = Modifier
                 .width(150.dp)
                 .height(210.dp)
-                .clickable { onDaySelected(item) }
-                .then(modifierTextura),
+                .then(if (isSelected) Modifier.shadow(8.dp, shape = CircleShape) else Modifier)
+                .clip(CircleShape)
+                .then(modifierTextura)
+                .clickable { onDaySelected(item) },
             shape = CircleShape,
-            color = corDeFundo, // APLICANDO A COR DINÂMICA
-            shadowElevation = if (isSelected) 8.dp else 0.dp
+            color = Color.Transparent,
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center) {

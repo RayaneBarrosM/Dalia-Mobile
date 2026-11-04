@@ -1,16 +1,10 @@
 package com.example.dalia2.ui.components
 
-import android.text.BoringLayout
-import androidx.appcompat.widget.VectorEnabledTintResources
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 
 @Composable
 fun Modifier.ElementoListrado(

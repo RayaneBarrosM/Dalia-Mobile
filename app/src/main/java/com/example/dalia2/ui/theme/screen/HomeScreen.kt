@@ -90,7 +90,8 @@ fun HomeScreen(
     viewModelForum: ForumViewModel,
     viewModelProfile: ProfileViewModel,
     onNavigateToRegister: () -> Unit = {},
-    onNavigateToCalendar: () -> Unit = {}
+    onNavigateToCalendar: () -> Unit = {},
+    onNavigateToDalia: () -> Unit = {}
 ) {
     val hoje = LocalDate.now()
     val ontem = hoje.minusDays(1)
@@ -167,8 +168,51 @@ fun HomeScreen(
                 )
             }
         }
+        // ACESSO À DÁLIA
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp)
+                .clickable { onNavigateToDalia() },
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFFFFE8F1)
+            )
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(18.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("🌸", fontSize = 32.sp)
 
-        Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Converse com a Dália",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF9B527C)
+                    )
+
+                    Text(
+                        text = "Estou aqui para conversar com você 💜",
+                        fontSize = 12.sp,
+                        color = Color(0xFF76566A)
+                    )
+                }
+
+                Text(
+                    text = "➜",
+                    fontSize = 22.sp,
+                    color = Color(0xFF9B527C)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
 
         Text(
             text = "Notícias sobre saúde",

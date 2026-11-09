@@ -58,7 +58,8 @@ fun HomePregnantScreen(
     onNavigateToRegister: () -> Unit = {},
     onNavigateToCalendar: () -> Unit = {},
     onNavigateToArticle: (String) -> Unit = {},
-    onNavigateToGeneralNews: () -> Unit = {}
+    onNavigateToGeneralNews: () -> Unit = {},
+    onNavigateToDalia: () -> Unit = {}
 ) {
 
 
@@ -183,7 +184,51 @@ fun HomePregnantScreen(
                 modifier = Modifier.align(Alignment.Start)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            // ACESSO À DÁLIA
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onNavigateToDalia() },
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFFFE8F1)
+                )
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(18.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("🌸", fontSize = 32.sp)
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Converse com a Dália",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF9B527C)
+                        )
+
+                        Text(
+                            text = "Um espaço para acolher você 💜",
+                            fontSize = 12.sp,
+                            color = Color(0xFF76566A)
+                        )
+                    }
+
+                    Text(
+                        text = "➜",
+                        fontSize = 22.sp,
+                        color = Color(0xFF9B527C)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             //Cards Fixos
             Row(
                 modifier = Modifier.fillMaxWidth(),

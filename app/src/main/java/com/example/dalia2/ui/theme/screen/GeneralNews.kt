@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.dalia2.R
 import com.example.dalia2.ui.theme.Dalia2Theme
+import android.content.res.Configuration
 
 @Composable
 fun GeneralNewsScreen(
@@ -52,7 +54,9 @@ fun GeneralNewsScreen(
     var selectedCategory by remember { mutableStateOf("For You") }
     val categories = listOf("Para você", "Top", "Saúde", "legislação", "Bem-estar", "Trabalho")
 
-    Scaffold() { innerPadding ->
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -159,7 +163,7 @@ fun NewsRowItem(
                 text = newsItem.title,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
                 lineHeight = 20.sp
@@ -205,7 +209,7 @@ fun NewsRowItem(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Dark Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun GeneralNewsScreenPreview() {
     Dalia2Theme {

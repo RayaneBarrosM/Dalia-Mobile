@@ -33,6 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.dalia2.R
 import com.example.dalia2.ui.theme.Dalia2Theme
+import android.content.res.Configuration //POde tirar
+import androidx.compose.material3.MaterialTheme
 
 data class ArticleSection(
     val type: SectionType,
@@ -48,7 +50,7 @@ data class ArticleItem(
     val id: String,
     val title: String,
     val description: String = "",
-    val sections: List<ArticleSection> = emptyList(), // ⬅️ Lista de seções estruturadas
+    val sections: List<ArticleSection> = emptyList(), // Lista de seções estruturadas
     val content: String = "",                         // Fallback caso venha em texto plano
     val categoryTag: String,
     val imageUrl: String? = null,
@@ -70,7 +72,9 @@ fun ArticleScreen(
     val scrollState = rememberScrollState()
 
     Log.d("ARTICLE", "Estanos na screen")
-    Scaffold { innerPadding ->
+    Scaffold (
+        containerColor = MaterialTheme.colorScheme.background
+    ){ innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -91,7 +95,7 @@ fun ArticleScreen(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
                     contentDescription = "Voltar",
-                    tint = Color.Black,
+                    tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .size(20.dp)
                         .clickable { onBackClick() }
@@ -104,7 +108,7 @@ fun ArticleScreen(
                     Icon(
                         imageVector = Icons.Default.BookmarkBorder,
                         contentDescription = "Guardar",
-                        tint = Color.Black,
+                        tint = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier
                             .size(24.dp)
                             .clickable { onBookmarkClick() }
@@ -112,7 +116,7 @@ fun ArticleScreen(
                     Icon(
                         imageVector = Icons.Default.Share,
                         contentDescription = "Partilhar",
-                        tint = Color.Black,
+                        tint = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier
                             .size(24.dp)
                             .clickable { onShareClick() }
@@ -127,7 +131,7 @@ fun ArticleScreen(
                 text = articleItem.title,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onBackground,
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -143,7 +147,7 @@ fun ArticleScreen(
                     text = articleItem.authorName.ifBlank { "Redação Dália" },
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Medium,
-                    color = Color.Black.copy(alpha = 0.7f)
+                    color = MaterialTheme.colorScheme.onBackground
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -151,7 +155,7 @@ fun ArticleScreen(
                 Text(
                     text = articleItem.publishedTimeAgo.ifBlank { "Recente" },
                     fontSize = 14.sp,
-                    color = Color.Black.copy(alpha = 0.5f)
+                    color = MaterialTheme.colorScheme.onBackground,
                 )
             }
 
@@ -167,7 +171,7 @@ fun ArticleScreen(
                                 text = section.text,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF1E293B), // Cinza chumbo/escuro para subtítulos
+                                color = MaterialTheme.colorScheme.onBackground,
                                 lineHeight = 24.sp
                             )
                             Spacer(modifier = Modifier.height(8.dp))
@@ -177,7 +181,7 @@ fun ArticleScreen(
                                 text = section.text,
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Normal,
-                                color = Color.Black.copy(alpha = 0.85f),
+                                color = MaterialTheme.colorScheme.onBackground,
                                 lineHeight = 23.sp
                             )
                             Spacer(modifier = Modifier.height(12.dp))
@@ -189,7 +193,7 @@ fun ArticleScreen(
                 Text(
                     text = articleItem.content,
                     fontSize = 15.sp,
-                    color = Color.Black.copy(alpha = 0.85f),
+                    color = MaterialTheme.colorScheme.onBackground,
                     lineHeight = 22.sp
                 )
             }
@@ -199,7 +203,7 @@ fun ArticleScreen(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun ArticleScreenPreview() {
     Dalia2Theme {

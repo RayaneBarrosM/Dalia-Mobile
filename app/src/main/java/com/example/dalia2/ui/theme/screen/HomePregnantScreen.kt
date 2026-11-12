@@ -37,6 +37,7 @@ import com.example.dalia2.ui.theme.Red
 import com.example.dalia2.ui.theme.Dalia2Theme
 import com.example.dalia2.ui.theme.viewmodel.PregnancyCalendarViewModel
 import com.example.dalia2.ui.theme.viewmodel.ProfileViewModel
+import androidx.compose.material3.MaterialTheme
 
 data class NewsItem(
     val id: String,
@@ -100,7 +101,7 @@ fun HomePregnantScreen(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         // Seção de semanas de gravidez
         Box(
@@ -183,7 +184,7 @@ fun HomePregnantScreen(
                 text = "Hoje",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.align(Alignment.Start)
             )
 
@@ -256,7 +257,7 @@ fun HomePregnantScreen(
                 text = "Dicas para esse momento tão importante",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.align(Alignment.Start)
             )
 
@@ -286,13 +287,13 @@ fun HomePregnantScreen(
                         text = "Você sabe sobre as leis?",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = Black
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                     Text(
                         text = "Saiba como se defender",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
-                        color = Color.Black.copy(alpha = 0.7f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                     )
                 }
 

@@ -56,6 +56,9 @@ class ProfileViewModel @Inject constructor(
         initialValue = AppMode.MENSTRUACAO
     )
 
+
+
+
     fun loadUserProfile(forceRefresh: Boolean = false) {
         viewModelScope.launch {
             if (_uiState == null || forceRefresh) {
@@ -67,6 +70,7 @@ class ProfileViewModel @Inject constructor(
                     _uiState = userProfile
                     userProfile.currentMode?.let { mode ->
                         sessionManager.saveAppMode(mode)
+                        cicloDao.salvarOuAtualizarModo(mode.name) // ⬅️ Dispara o observador na navegação
                     }
                 }
                 isLoading = false

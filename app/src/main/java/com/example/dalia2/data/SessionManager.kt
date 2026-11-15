@@ -24,7 +24,7 @@ class SessionManager @Inject constructor(@ApplicationContext context: Context) {
     )
 
     fun saveColorBlindFilter(enable: Boolean){
-        sharedPreferences.edit().putBoolean("pref_colorblind_filter", enable).apply()
+        sharedPreferences.edit().putBoolean("pref_colorblind_filter", enable).commit()
     }
 
     fun isColorBlindFilterEnabled(): Boolean{
@@ -32,7 +32,7 @@ class SessionManager @Inject constructor(@ApplicationContext context: Context) {
     }
 
     fun saveAppMode(mode: AppMode) {
-        sharedPreferences.edit().putString("app_mode", mode.name).apply()
+        sharedPreferences.edit().putString("app_mode", mode.name).commit()
     }
 
     fun getAppMode(): AppMode {
@@ -44,11 +44,11 @@ class SessionManager @Inject constructor(@ApplicationContext context: Context) {
         }
     }
     fun saveAccessToken(token: String) {
-        sharedPreferences.edit().putString("accessToken", token).apply()
+        sharedPreferences.edit().putString("accessToken", token).commit()
     }
 
     fun saveRefreshToken(token: String) {
-        sharedPreferences.edit().putString("refreshToken", token).apply()
+        sharedPreferences.edit().putString("refreshToken", token).commit()
     }
 
     fun getAccessToken(): String? = sharedPreferences.getString("accessToken", null)
@@ -56,6 +56,6 @@ class SessionManager @Inject constructor(@ApplicationContext context: Context) {
     fun getRefreshToken(): String? = sharedPreferences.getString("refreshToken", null)
 
     fun clearSession() {
-        sharedPreferences.edit().clear().apply()
+        sharedPreferences.edit().clear().commit()
     }
 }

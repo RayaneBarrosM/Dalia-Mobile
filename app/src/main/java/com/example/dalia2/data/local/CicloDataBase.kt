@@ -18,7 +18,8 @@ abstract class CicloDataBase : RoomDatabase() {
                     context.applicationContext,
                     CicloDataBase:: class.java,
                     "ciclo_database"
-                ).build()
+                ).fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }

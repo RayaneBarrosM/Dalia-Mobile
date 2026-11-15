@@ -78,6 +78,19 @@ fun AppNavigation(
         }
     }
 
+    LaunchedEffect(modoBanco, currentRoute) {
+        if (modoBanco == "GRAVIDEZ" && currentRoute == "home") {
+            navController.navigate("homePregnant") {
+                popUpTo("home") { inclusive = true }
+                launchSingleTop = true
+            }
+        } else if (modoBanco == "MENSTRUACAO" && currentRoute == "homePregnant") {
+            navController.navigate("home") {
+                popUpTo("homePregnant") { inclusive = true }
+                launchSingleTop = true
+            }
+        }
+    }
     LaunchedEffect(Unit) {
         sessionEvenBus.sessionExpiredEvent.collect {
             navController.navigate("login") {
@@ -119,6 +132,7 @@ fun AppNavigation(
         composable("login") {
             LoginScreen(
                 onLoginSuccess = {
+                    viewmodelProfile.loadUserProfile(true)
                     val mode = sessionManager.getAppMode()
                     val target = if (mode == AppMode.GRAVIDEZ) "homePregnant" else "home"
                     navController.navigate(target) {
@@ -229,11 +243,10 @@ fun AppNavigation(
 
         composable("home"){
             val calendarViewModel: CalendarViewModel = hiltViewModel()
-            val profileViewModel: ProfileViewModel = hiltViewModel()
             HomeScreen(
                 viewModel = calendarViewModel,
                 viewModelForum = viewModelForum,
-                viewModelProfile = profileViewModel,
+                viewModelProfile = viewmodelProfile,
                 onNavigateToRegister = {
                     navController.navigate("register")
                 },
@@ -248,10 +261,9 @@ fun AppNavigation(
 
         composable("homePregnant") {
             val pregnancyCalendarViewModel: PregnancyCalendarViewModel = hiltViewModel()
-            val profileViewModel: ProfileViewModel = hiltViewModel()
             HomePregnantScreen(
                 viewModel = pregnancyCalendarViewModel,
-                viewModelProfile = profileViewModel,
+                viewModelProfile = viewmodelProfile,
                 onNavigateToRegister = {
                     navController.navigate("register")
                 },

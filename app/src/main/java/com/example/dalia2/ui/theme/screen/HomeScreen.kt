@@ -115,8 +115,6 @@ fun HomeScreen(
     val articlesAPI by viewModelForum.articles.collectAsState()
 
     val stateProfile = viewModelProfile._uiState
-    val currentMode = stateProfile?.currentMode ?: AppMode.MENSTRUACAO
-    val isModoGravidez = currentMode == AppMode.GRAVIDEZ
 
     DisposableEffect(Unit) {
         println(">>> HOME CRIADA")
@@ -129,7 +127,7 @@ fun HomeScreen(
 
     val scrollState = rememberScrollState()
     LaunchedEffect(Unit) {
-        viewModelProfile.loadUserProfile()
+        viewModelProfile.loadUserProfile(true)
         viewModel.carregarStatusHoje()
         viewModelForum.carregarArticles()
         if(stateProfile != null && stateProfile.search == null){

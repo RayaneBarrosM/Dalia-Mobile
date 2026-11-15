@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dalia2.data.SessionManager
 import com.example.dalia2.data.local.CicloDao
+import com.example.dalia2.data.model.AppMode
 import com.example.dalia2.data.model.ChangePassword
 import com.example.dalia2.data.model.ForgetPassword
 import com.example.dalia2.data.model.LoginRequest
@@ -80,9 +81,9 @@ class LoginViewModel @Inject constructor(
                 val response = repository.login(request)
                 Log.d("TESTE", "tentando logar")
                 if (response.isSuccess) {
+                    cicloDao.salvarOuAtualizarModo(sessionManager.getAppMode().toString())
                     loginSucess = true
-                    cicloDao.atualizarModoNoUltimoCiclo(sessionManager.getAppMode().toString())
-                    Log.d("API_SUCESS", "Usuario logado")
+                Log.d("API_SUCESS_LOG", "Usuario logado ")
                 } else {
                     loginSucess = false
                     errorMessage = repository.login(request).exceptionOrNull()?.message

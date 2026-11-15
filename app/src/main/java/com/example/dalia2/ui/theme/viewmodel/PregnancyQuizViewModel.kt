@@ -7,7 +7,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dalia2.data.SessionManager
 import com.example.dalia2.data.local.CicloDao
+import com.example.dalia2.data.model.AppMode
 import com.example.dalia2.data.model.PregnancyRequest
 import com.example.dalia2.data.model.SearchRequest
 import com.example.dalia2.data.repository.DaliaRepository
@@ -21,7 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class PregnancyQuizViewModel @Inject constructor(
     private val repository: DaliaRepository,
-    private val cicloDao: CicloDao
+    private val cicloDao: CicloDao,
+    private val sessionManager: SessionManager
 ) : ViewModel(){
     private val _uiState = MutableStateFlow(PregnancyRequest(true, "", 0, "", false, false, emptyList(), emptyList()))
 
@@ -84,6 +87,7 @@ class PregnancyQuizViewModel @Inject constructor(
 
                 if(response.isSuccess){
                     quizSuccess = true
+                    sessionManager.saveAppMode(AppMode.GRAVIDEZ)
                     cicloDao.atualizarModoNoUltimoCiclo("GRAVIDEZ")
                     Log.d("API_SUCESS","pequisa gravidez Salva")
                 }else{

@@ -1,5 +1,7 @@
 package com.example.dalia2.ui.theme.screen
 
+import android.content.Intent
+import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,28 +15,35 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.dalia2.R
 import com.example.dalia2.ui.theme.Dalia2Theme
-import android.content.res.Configuration //POde tirar
-import androidx.compose.material3.MaterialTheme
+import kotlinx.coroutines.launch
 
 data class ArticleSection(
     val type: SectionType,
@@ -66,14 +75,23 @@ data class ArticleItem(
 fun ArticleScreen(
     articleItem: ArticleItem,
     onBackClick: () -> Unit = {},
-    onBookmarkClick: () -> Unit = {},
+    onBookmarkClick: (Boolean) -> Unit = {},
     onShareClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
 
-    Log.d("ARTICLE", "Estanos na screen")
+    var isSaved by remember { mutableStateOf(articleItem.isBookmarked) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
+    Log.d("ARTICLE", "Estamos na screen")
+
     Scaffold (
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = MaterialTheme.colorScheme.background,
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        }
     ){ innerPadding ->
         Column(
             modifier = Modifier
@@ -106,12 +124,24 @@ fun ArticleScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = Icons.Default.BookmarkBorder,
-                        contentDescription = "Guardar",
-                        tint = MaterialTheme.colorScheme.onBackground,
+                        imageVector = if (isSaved) Icons.Filled.Bookmark else Icons.Default.BookmarkBorder,
+                        contentDescription = if (isSaved) "Remover dos salvos" else "Guardar artigo",
+                        tint = if (isSaved) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier
                             .size(24.dp)
-                            .clickable { onBookmarkClick() }
+                            .clickable {
+                                isSaved = !isSaved
+                                onBookmarkClick(isSaved)
+
+                                coroutineScope.launch {
+                                    // Cancela mensagens anteriores caso a usuária clique várias vezes rápido
+                                    snackbarHostState.currentSnackbarData?.dismiss()
+                                    snackbarHostState.showSnackbar(
+                                        message = if (isSaved) "Artigo salvo!" else "Artigo removido dos salvos.",
+                                        duration = SnackbarDuration.Short
+                                    )
+                                }
+                            }
                     )
                     Icon(
                         imageVector = Icons.Default.Share,
@@ -119,7 +149,17 @@ fun ArticleScreen(
                         tint = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier
                             .size(24.dp)
-                            .clickable { onShareClick() }
+                            .clickable {
+                                val shareText = "Olha este artigo incrível do Dália: ${articleItem.title}\n\nSaiba mais!"
+                                val sendIntent = Intent().apply {
+                                    action = Intent.ACTION_SEND
+                                    putExtra(Intent.EXTRA_TEXT, shareText)
+                                    type = "text/plain"
+                                }
+                                val shareIntent = Intent.createChooser(sendIntent, "Partilhar artigo via")
+                                context.startActivity(shareIntent)
+                                onShareClick()
+                            }
                     )
                 }
             }

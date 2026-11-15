@@ -26,7 +26,7 @@ object DaliaChatModule {
             .build()
 
         return Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8000/")
+            .baseUrl("https://dalia-chat-backend.onrender.com/")
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

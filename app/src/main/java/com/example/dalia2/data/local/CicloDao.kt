@@ -3,6 +3,7 @@ package com.example.dalia2.data.local
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CicloDao {
@@ -19,4 +20,32 @@ interface CicloDao {
     // Obtém apenas o ciclo mais recente gravado
     @Query("SELECT * FROM ciclo ORDER BY id DESC LIMIT 1")
     suspend fun getUltimoCiclo(): CicloEntity?
+
+    @Query("SELECT modoAtual FROM ciclo ORDER BY id DESC LIMIT 1")
+    fun observarModoAtual(): Flow<String?>
+
+    @Query("UPDATE ciclo SET modoAtual = :novoModo WHERE id = (SELECT id FROM ciclo ORDER BY id DESC LIMIT 1)")
+    suspend fun atualizarModoNoUltimoCiclo(novoModo: String)
+
+    @Transaction
+    suspend fun salvarOuAtualizarModo(novoModo: String) {
+        val ultimo = getUltimoCiclo()
+        if (ultimo != null) {
+            atualizarModoNoUltimoCiclo(novoModo)
+        } else {
+            insert(
+                CicloEntity(
+                    minCycleDuration = 28,
+                    maxCycleDuration = 28,
+                    lastMenstruationDay = "",
+                    diasDeAtraso = 0L,
+                    fimMenstruacao = "",
+                    inicioPeriodoFertil = "",
+                    fimPeriodoFertil = "",
+                    diaOvulacao = "",
+                    modoAtual = novoModo
+                )
+            )
+        }
+    }
 }

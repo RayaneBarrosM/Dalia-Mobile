@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dalia2.data.SessionManager
+import com.example.dalia2.data.local.CicloDao
 import com.example.dalia2.data.model.ChangePassword
 import com.example.dalia2.data.model.ForgetPassword
 import com.example.dalia2.data.model.LoginRequest
@@ -19,6 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val repository: DaliaRepository,
+    private val cicloDao: CicloDao,
+    private val sessionManager: SessionManager
 ): ViewModel() {
     private val _uiState = MutableStateFlow(LoginRequest("", ""))
 
@@ -77,6 +81,7 @@ class LoginViewModel @Inject constructor(
                 Log.d("TESTE", "tentando logar")
                 if (response.isSuccess) {
                     loginSucess = true
+                    cicloDao.atualizarModoNoUltimoCiclo(sessionManager.getAppMode().toString())
                     Log.d("API_SUCESS", "Usuario logado")
                 } else {
                     loginSucess = false

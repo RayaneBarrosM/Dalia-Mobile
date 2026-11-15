@@ -14,5 +14,6 @@ data class CicloEntity (
     val fimMenstruacao: String,
     val inicioPeriodoFertil: String,
     val fimPeriodoFertil: String,
-    val diaOvulacao: String                         // Status de conclusão da tarefa
+    val diaOvulacao: String,
+    val modoAtual: String = "MENSTRUACAO"// Status de conclusão da tarefa
 )

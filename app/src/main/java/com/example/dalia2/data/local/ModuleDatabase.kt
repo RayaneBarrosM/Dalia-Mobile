@@ -20,7 +20,8 @@ object ModuleDatabase {
             context,
             CicloDataBase::class.java,
             "dalia_db"
-        ).build()
+        ).fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides

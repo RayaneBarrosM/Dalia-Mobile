@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.dalia2.data.SessionManager
+import com.example.dalia2.data.local.CicloDao
 import com.example.dalia2.data.model.AppMode
 import com.example.dalia2.data.model.PregnancyData
 import com.example.dalia2.data.model.ProfileRequest
@@ -30,7 +31,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val repository: DaliaRepository,
-     val sessionManager: SessionManager
+     val sessionManager: SessionManager,
+    private val cicloDao: CicloDao
 ) : ViewModel() {
 
     var _uiState by mutableStateOf<ProfileResponse?>(null)
@@ -101,6 +103,7 @@ class ProfileViewModel @Inject constructor(
             )
             val result = repository.updatePerfil(profileRequest)
             result.onSuccess {
+                cicloDao.salvarOuAtualizarModo("MENSTRUACAO")
                 sessionManager.saveAppMode(AppMode.MENSTRUACAO)
                 loadUserProfile(forceRefresh = true)
                 onSuccess()

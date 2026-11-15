@@ -10,6 +10,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.navigation.compose.NavHost
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -23,6 +24,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.dalia2.data.SessionManager
+import com.example.dalia2.data.local.CicloDataBase
 import com.example.dalia2.data.model.AppMode
 import com.example.dalia2.network.SessionEvenBus
 import com.example.dalia2.ui.components.BottomNavigationBar
@@ -56,6 +58,11 @@ fun AppNavigation(
     val viewModelForum: ForumViewModel = hiltViewModel(context as ComponentActivity)
     val viewModelPregnancyQuiz: PregnancyQuizViewModel = hiltViewModel(context as ComponentActivity)
 
+    val db = remember { CicloDataBase.getDatabase(context) }
+    val cicloDao = remember { db.cicloDao() }
+
+// 1. Observa o modo salvo no banco local em tempo real
+    val modoBanco by cicloDao.observarModoAtual().collectAsState(initial = null)
     // Função auxiliar para determinar a rota de Home correta dinamicamente
     val homeRoute = if (sessionManager.getAppMode() == AppMode.GRAVIDEZ) "homePregnant" else "home"
     // Lista de rotas onde a barra deve aparecer

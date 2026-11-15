@@ -13,10 +13,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.example.dalia2.data.local.CicloDao
 
 @HiltViewModel
 class SignupViewModel @Inject constructor(
-    private val repository: DaliaRepository
+    private val repository: DaliaRepository,
+    private val cicloDao: CicloDao
 ) : ViewModel(){
     private val _uiState = MutableStateFlow(UserRegistre("", "", "", "", ""))
     var isLoading by mutableStateOf(false)
@@ -64,7 +66,9 @@ class SignupViewModel @Inject constructor(
 
                 if (response.isSuccess) {
                     sigupSucess = true
+                    cicloDao.salvarOuAtualizarModo("MENSTRUACAO")
                     Log.d("API_SUCESS", "Usuario: ${request.name} criado com sucesso")
+
                 } else {
                     _isSuccess.value = false
                     errorMessage = repository.createUser(request).exceptionOrNull()?.message

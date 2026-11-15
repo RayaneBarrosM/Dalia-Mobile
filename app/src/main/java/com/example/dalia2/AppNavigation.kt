@@ -40,9 +40,7 @@ import com.example.dalia2.ui.theme.viewmodel.ProfileViewModel
 import com.example.dalia2.ui.theme.viewmodel.QuizViewModel
 
 @Composable
-fun AppNavigation(
-
-) {
+fun AppNavigation() {
     val navController = rememberNavController()
     val context = LocalContext.current
     val sessionManager = remember { SessionManager(context) }
@@ -57,6 +55,7 @@ fun AppNavigation(
     val viewmodelCalendar: CalendarViewModel = hiltViewModel(context as ComponentActivity)
     val viewModelForum: ForumViewModel = hiltViewModel(context as ComponentActivity)
     val viewModelPregnancyQuiz: PregnancyQuizViewModel = hiltViewModel(context as ComponentActivity)
+    val currentMode by viewmodelProfile.currentMode.collectAsState()
 
     val db = remember { CicloDataBase.getDatabase(context) }
     val cicloDao = remember { db.cicloDao() }
@@ -105,7 +104,7 @@ fun AppNavigation(
             if (currentRoute in bottomBarRoutes) {
                 BottomNavigationBar(
                     navController = navController,
-                    currentMode = sessionManager.getAppMode()
+                    currentMode = currentMode
                 )
             }
         }
@@ -132,7 +131,6 @@ fun AppNavigation(
         composable("login") {
             LoginScreen(
                 onLoginSuccess = {
-                    viewmodelProfile.loadUserProfile(true)
                     val mode = sessionManager.getAppMode()
                     val target = if (mode == AppMode.GRAVIDEZ) "homePregnant" else "home"
                     navController.navigate(target) {
@@ -242,9 +240,8 @@ fun AppNavigation(
         }
 
         composable("home"){
-            val calendarViewModel: CalendarViewModel = hiltViewModel()
             HomeScreen(
-                viewModel = calendarViewModel,
+                viewModel = viewmodelCalendar,
                 viewModelForum = viewModelForum,
                 viewModelProfile = viewmodelProfile,
                 onNavigateToRegister = {
@@ -252,17 +249,13 @@ fun AppNavigation(
                 },
                 onNavigateToCalendar = {
                     navController.navigate("calendar")
-                },
-                onNavigateToQuiz = {
-                    navController.navigate("startQuiz")
                 }
             )
         }
 
         composable("homePregnant") {
-            val pregnancyCalendarViewModel: PregnancyCalendarViewModel = hiltViewModel()
             HomePregnantScreen(
-                viewModel = pregnancyCalendarViewModel,
+                viewModel = viewmodelPregnancyCalendar,
                 viewModelProfile = viewmodelProfile,
                 onNavigateToRegister = {
                     navController.navigate("register")
@@ -270,9 +263,8 @@ fun AppNavigation(
                 onNavigateToCalendar = {
                     navController.navigate("calendar")
                 },
-                onNavigateToArticle = { rawUrl ->
-                    val encodedUrl = java.net.URLEncoder.encode(rawUrl, java.nio.charset.StandardCharsets.UTF_8.toString())
-                    navController.navigate("articleScreen/$encodedUrl")
+                onNavigateToArticle = {
+                    navController.navigate("articleScreen")
                 },
                 onNavigateToGeneralNews = {
                     navController.navigate("generalNews")
@@ -282,39 +274,38 @@ fun AppNavigation(
 
 
         composable("register") {
-            val calendarViewModel: CalendarViewModel = hiltViewModel()
             RegisterScreen(
-                viewModel = calendarViewModel,
+                viewModel = viewmodelCalendar,
                 onBack = { navController.popBackStack()}
             )
         }
 
-        composable ("calendar"){
-            CalendarScreen(
-                viewModel = viewmodelCalendar,
-                viewModelPregnancy = viewmodelPregnancyCalendar,
-                viewModelProfile = viewmodelProfile
-            )
-        }
+            composable("calendar") {
+                CalendarScreen(
+                    viewModel = viewmodelCalendar,
+                    viewModelPregnancy = viewmodelPregnancyCalendar,
+                    viewModelProfile = viewmodelProfile
+                )
+            }
 
-        composable("forum") {
-            ForumScreen(
-                viewModel = viewModelForum,
-                onToCreatePost = {
-                    navController.navigate("createPost")
-                },
-                onNavigateToPostDetail = { idPost ->
-                    navController.navigate("postDetail/$idPost")
-                }
-            )
-        }
+            composable("forum") {
+                ForumScreen(
+                    viewModel = viewModelForum,
+                    onToCreatePost = {
+                        navController.navigate("createPost")
+                    },
+                    onNavigateToPostDetail = { idPost ->
+                        navController.navigate("postDetail/$idPost")
+                    }
+                )
+            }
 
-        composable("createPost") {
-            CreatePostScreen(
-                viewModel = viewModelForum,
-                onBack = { navController.popBackStack() }
-            )
-        }
+            composable("createPost") {
+                CreatePostScreen(
+                    viewModel = viewModelForum,
+                    onBack = { navController.popBackStack() }
+                )
+            }
 
         composable("postDetail/{idPost}") { backStackEntry ->
             val postId = backStackEntry.arguments?.getString("idPost") ?: ""
@@ -326,21 +317,21 @@ fun AppNavigation(
             )
         }
 
-        composable("bot") {
-            DaliaBotScreen()
-        }
+            composable("bot") {
+                DaliaBotScreen()
+            }
 
-        composable("informationScreen") {
-            InformationScreen()
-        }
+            composable("informationScreen") {
+                InformationScreen()
+            }
 
-        composable("helpScreen") {
-            HelpScreen(
-                onBackClick = {
-                    navController.popBackStack()
-                }
-            )
-        }
+            composable("helpScreen") {
+                HelpScreen(
+                    onBackClick = {
+                        navController.popBackStack()
+                    }
+                )
+            }
 
         composable("editProfileScreen") {
             Log.d("EditProfileScreen", "passando aqui")
@@ -421,6 +412,5 @@ fun AppNavigation(
             GeneralNewsScreen()
         }
 
-    }
-    }
+    }}
 }

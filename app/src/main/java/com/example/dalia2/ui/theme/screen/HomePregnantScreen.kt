@@ -56,7 +56,8 @@ fun HomePregnantScreen(
     onNavigateToRegister: () -> Unit = {},
     onNavigateToCalendar: () -> Unit = {},
     onNavigateToArticle: (String) -> Unit = {},
-    onNavigateToGeneralNews: () -> Unit = {}
+    onNavigateToGeneralNews: () -> Unit = {},
+    onNavigateToDalia: () -> Unit = {}
 ) {
 
     val noticiasDiarias = remember {

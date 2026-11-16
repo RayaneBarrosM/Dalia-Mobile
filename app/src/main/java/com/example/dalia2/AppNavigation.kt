@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -39,6 +38,7 @@ import com.example.dalia2.ui.theme.viewmodel.PregnancyQuizViewModel
 import com.example.dalia2.ui.theme.viewmodel.ProfileViewModel
 import com.example.dalia2.ui.theme.viewmodel.QuizViewModel
 
+
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
@@ -55,7 +55,6 @@ fun AppNavigation() {
     val viewmodelCalendar: CalendarViewModel = hiltViewModel(context as ComponentActivity)
     val viewModelForum: ForumViewModel = hiltViewModel(context as ComponentActivity)
     val viewModelPregnancyQuiz: PregnancyQuizViewModel = hiltViewModel(context as ComponentActivity)
-    val currentMode by viewmodelProfile.currentMode.collectAsState()
 
     val db = remember { CicloDataBase.getDatabase(context) }
     val cicloDao = remember { db.cicloDao() }
@@ -99,12 +98,13 @@ fun AppNavigation() {
         }
     }
 
+
     Scaffold(
         bottomBar = {
             if (currentRoute in bottomBarRoutes) {
                 BottomNavigationBar(
                     navController = navController,
-                    currentMode = currentMode
+                    currentMode = sessionManager.getAppMode()
                 )
             }
         }
